@@ -1,0 +1,306 @@
+/* ================================
+   GLOBAL
+================================ */
+:root {
+    --primary: #8b5cf6;
+    --primary-dark: #6366f1;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Work Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ================================
+   NAVBAR
+================================ */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);  
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px 0;
+    z-index: 1000;
+    transition: all 0.3s ease; /* smooth */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: #6366f1;
+      
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    transition: color 0.3s;
+
+}
+
+.nav-links a:hover {
+    color: #6366f1;
+}
+
+/* ACTIVE LINK (like register page) */
+/* When scrolled */
+.navbar.scrolled {
+    background: transparent;    
+       backdrop-filter: blur(10px);
+    box-shadow: none;
+   
+}
+/* Make ALL navbar content fade */
+.navbar.scrolled * {
+    opacity: 0.6; /* adjust (0 = invisible, 1 = normal) */
+}
+
+
+
+/* PRIMARY BUTTON */
+.btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6); /* ✅ fixed missing semicolon */
+    color: white !important;
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+}
+
+
+/* ================================
+   AUTH PAGE
+================================ */
+.auth-page {
+    min-height: calc(100vh - 68px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+}
+
+.auth-container {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+}
+
+/* ================================
+   FORM
+================================ */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.form-group small {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+/* ================================
+   CHECKBOX
+================================ */
+.checkbox-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.checkbox-group input {
+    accent-color: var(--primary);
+}
+
+/* ================================
+   BUTTONS
+================================ */
+.btn-submit,
+.btn-reset {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-submit {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-submit:hover {
+    background: var(--primary-dark);
+}
+
+.btn-reset {
+    background: #f1f5f9;
+}
+
+/* ================================
+   FOOTER (FORM)
+================================ */
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+/* ================================
+   PAGE FOOTER
+================================ */
+.footer {
+    background: #0f172a;
+    color: #94a3b8;
+    padding: 40px 0 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.footer-section h4 {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    margin-bottom: 6px;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.textfooter {
+    text-align: center;
+    font-size: 0.85rem;
+    border-top: 1px solid #1e293b;
+    padding-top: 16px;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 700px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-links {
+        gap: 10px;
+        font-size: 0.8rem;
+    }
+}
