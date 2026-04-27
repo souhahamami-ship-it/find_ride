@@ -1,0 +1,334 @@
+/* ================================
+   INFO PAGE — EDITORIAL REDESIGN
+   ================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --ink:       #0d0d0d;
+  --paper:     #f5f2ec;
+  --accent:    #c8401e;
+  --accent2:   #6366f1;
+  --soft:      #e8e4da;
+  --muted:     #7a7267;
+  --rule:      #c9c4b8;
+  --white:     #ffffff;
+  --radius-sm: 4px;
+  --radius-lg: 20px;
+  --serif:     'DM Serif Display', Georgia, serif;
+  --sans:      'DM Sans', system-ui, sans-serif;
+}
+
+/* ── Reset / Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Page Header ── */
+.page-header {
+  position: relative;
+  background-color: var(--accent2);
+  overflow: hidden;
+  padding: 90px 0 70px;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 1px,
+      transparent 1px,
+      transparent 60px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 1px,
+      transparent 1px,
+      transparent 60px
+    );
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  right: -30px;
+  top: -20px;
+  font-size: 260px;
+  color: rgba(255,255,255,0.04);
+  font-family: var(--serif);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.page-header h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  color: var(--white);
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.page-header h1::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--accent);
+  margin-top: 14px;
+}
+
+.textpageheader {
+  color: rgba(255,255,255,0.65);
+  font-size: 1.05rem;
+  margin-top: 14px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  position: relative;
+}
+
+/* ── Container ── */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ── Info Sections ── */
+.info-section {
+  position: relative;
+  margin: 70px 0;
+  padding: 52px 56px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.info-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: var(  --muted  );
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  transition: width 0.35s ease;
+}
+
+.info-section:hover {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.09);
+  transform: translateY(-3px);
+}
+
+.info-section:hover::before {
+  width: 8px;
+}
+
+/* Section counter badge */
+.info-section::after {
+  content: attr(id);
+  position: absolute;
+  top: 18px;
+  right: 28px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.5;
+  font-family: var(--sans);
+}
+
+/* ── Headings ── */
+.info-section h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.info-section h2 span.accent {
+  color: var(--accent);
+}
+
+.info-section h3 {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 30px;
+  margin-bottom: 12px;
+}
+
+/* ── Body Text ── */
+.info-section p {
+  color: #3a3630;
+  font-size: 0.97rem;
+  line-height: 1.85;
+  margin-bottom: 16px;
+  max-width: 68ch;
+}
+
+/* ── Lists ── */
+.info-section ul,
+.info-section ol {
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.info-section ul li,
+.info-section ol li {
+  position: relative;
+  padding: 11px 16px 11px 44px;
+  margin-bottom: 8px;
+  color: #2e2a25;
+  font-size: 0.95rem;
+  background: var(--soft);
+  border-radius: 8px;
+  transition: background 0.2s ease, padding-left 0.2s ease;
+}
+
+.info-section ul li:hover,
+.info-section ol li:hover {
+  background: #dedad1;
+  padding-left: 50px;
+}
+
+/* Bullet marker */
+.info-section ul li::before {
+  content: '—';
+  position: absolute;
+  left: 16px;
+  top: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* Ordered counter */
+.info-section ol {
+  counter-reset: item;
+}
+
+.info-section ol li {
+  counter-increment: item;
+  font-weight: 400;
+}
+
+.info-section ol li::before {
+  content: counter(item, decimal-leading-zero);
+  position: absolute;
+  left: 12px;
+  top: 11px;
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--accent);
+  line-height: 1.6;
+}
+
+/* ── Special Variant: About section ── */
+#about {
+  background: var(--accent2);
+  color: var(--white);
+  border-color: transparent;
+}
+
+#about::before {
+  background: var(--accent);
+}
+
+#about h2 {
+  color: var(--white);
+  border-color: rgba(255,255,255,0.15);
+}
+
+#about h3 {
+  color: rgba(255,255,255,0.5);
+}
+
+#about p {
+  color: rgba(255,255,255,0.8);
+}
+
+#about ul li {
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+#about ul li:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+#about ul li::before {
+  color: var(--accent);
+}
+
+#about::after {
+  color: rgba(255,255,255,0.12);
+}
+
+/* ── Contact & Support: subtle highlight ── */
+#contact,
+#support {
+  background: var(--soft);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .info-section {
+    padding: 36px 28px;
+    margin: 44px 0;
+  }
+
+  .page-header {
+    padding: 60px 0 48px;
+  }
+
+  .container {
+    padding: 0 18px;
+  }
+}
+
+/* ── Scroll reveal animation ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.info-section {
+  animation: fadeUp 0.6s ease both;
+}
+
+.info-section:nth-child(1) { animation-delay: 0.05s; }
+.info-section:nth-child(2) { animation-delay: 0.12s; }
+.info-section:nth-child(3) { animation-delay: 0.19s; }
+.info-section:nth-child(4) { animation-delay: 0.26s; }
+.info-section:nth-child(5) { animation-delay: 0.33s; }
+.info-section:nth-child(6) { animation-delay: 0.40s; }
+.info-section:nth-child(7) { animation-delay: 0.47s; }

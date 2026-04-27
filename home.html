@@ -1,0 +1,335 @@
+
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>RideShare_home</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>RideShare</span>
+            </div>
+            <div class="nav-links">
+                <a href="home.html" >Home</a>
+                <a href="profile.html" >Profile</a>
+                <a href="find_ride.html" >Find Rides</a>
+                <a href="offer_ride.html" >Offer Ride</a>
+                <a href="login.html" >Login</a>
+                <a href="register.html" class="btn-primary">Sign Up</a> 
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero ">
+        <div >
+            <div class="hero-shape shape-1"></div>
+            <div class="hero-shape shape-2"></div>
+            <div class="hero-shape shape-3"></div>
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-line">Travel Together,</span>
+                    <span class="title-line2">Save Together</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Connect with verified drivers and passengers. Share rides, reduce costs, and make your journey more sustainable.
+                </p>
+
+                <!-- Quick Search Form -->
+                <div class="hero-search">
+                    <div class="search-box">
+    <div class="search-field">
+        <label for="from">From</label>
+        <input type="text" placeholder="Tunis" id="from">
+    </div>
+
+    <!--  SWAP BUTTON HERE -->
+    <button id="swap-btn" type="button">⇄</button>
+
+    <div class="search-field">
+        <label for="to">To</label>
+        <input type="text" placeholder="Sfax" id="to">
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+        <label>Date</label>
+        <input type="date" id="date">
+    </div>
+
+    <button class="btn-search">Search</button>
+</div>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="hero-card card-1">
+                    <div class="card-header">
+                        <div class="user-avatar">S</div>
+                        <div>
+                            <div class="user-name">Sarah M.</div>
+                            <div class="user-rating">★★★★★ 4.9</div>
+                        </div>
+                    </div>
+                    <div class="card-route">Tunis → Sousse</div>
+                    <div class="card-price">15 TND</div>
+                </div>
+                
+                <div class="hero-card card-2">
+                    <div class="card-header">
+                        <div class="user-avatar">A</div>
+                        <div>
+                            <div class="user-name">Ahmed K.</div>
+                            <div class="user-rating">★★★★★ 5.0</div>
+                        </div>
+                    </div>
+                    <div class="card-route">Sfax → Tunis</div>
+                    <div class="card-price">25 TND</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="video-container">
+  <video controls >
+    <source src="Storyboard 1.mp4" type="video/mp4">
+  </video>
+</div>
+  
+
+   <!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose RideShare?</h2>
+        <table class="features-table">
+            <tr>
+                <td class="feature-card">
+                    <!-- Add icon using <img> -->
+                    <img src="https://static.vecteezy.com/system/resources/previews/059/468/244/non_2x/user-account-verified-icon-on-blank-background-vector.jpg" alt="Verified Users" class="feature-icon">
+                    <h4>Verified Users</h4> 
+                    <p>All drivers and passengers are verified with ID and phone number for your safety.</p>
+                </td>
+                <td class="feature-card">
+                    <img src="https://www.shutterstock.com/image-vector/trust-vector-icon-logo-sign-260nw-2557559617.jpg" alt="Trusted Community" class="feature-icon">
+                    <h4>Trusted Community</h4>
+                    <p>Rate and review users. Build trust through our transparent rating system.</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="feature-card">
+                    <img src="https://img.freepik.com/premium-vector/save-money-icon-simple-element-illustration-save-money-concept-symbol-design-can-be-used-web-mobile_159242-7270.jpg?semt=ais_user_personalization&w=740&q=80" alt="Save Money" class="feature-icon">
+                    <h4>Save Money</h4>
+                    <p>Split fuel costs and reduce your travel expenses significantly.</p>
+                </td>
+                <td class="feature-card">
+                    <img src="https://www.shutterstock.com/image-vector/flexibility-icon-isolated-on-background-260nw-2698757477.jpg" alt="Flexible Options" class="feature-icon">
+                    <h4>Flexible Options</h4>
+                    <p>Set preferences like women-only rides, music, pets, and conversation level.</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Create Your Profile</h3>
+                        <p>Sign up and verify your identity with phone and ID</p>
+                    </div>
+                </div>
+                
+                <div class="step-line"></div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Search or Offer</h3>
+                        <p>Find a ride that matches your route or offer your own</p>
+                    </div>
+                </div>
+                
+                <div class="step-line"></div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Book & Connect</h3>
+                        <p>Request booking and chat with your ride match</p>
+                    </div>
+                </div>
+                
+                <div class="step-line"></div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Travel Together</h3>
+                        <p>Share the ride and rate your experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Start Your Journey?</h2>
+                <p>Join thousands of users who trust RideShare for their daily commute</p>
+                <div class="cta-buttons">
+                    <a href="register.html" target="_blank" class="btn-primary-large"> Create Account   </a>
+                    <a href="find_ride.html" target="_blank" class="btn-secondary-large">Browse Rides</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>RideShare</h4>
+                    <p>Connecting travelers across Tunisia</p>
+                </div>
+                <div class="footer-section">
+    <h4>Quick Links</h4>
+    <a href="info.html#about" target="_blank">About Us</a>
+    <a href="info.html#safety" target="_blank">Safety</a>
+    <a href="info.html#support" target="_blank">Support</a>
+</div>
+
+<div class="footer-section">
+    <h4>Legal</h4>
+    <a href="info.html#terms" target="_blank">Terms of Service</a>
+    <a href="info.html#privacy" target="_blank">Privacy Policy</a>
+    <a href="info.html#cookies" target="_blank">Cookie Policy</a>
+</div>
+
+<div class="footer-section">
+    <h4>Contact Us</h4>
+    <a href="info.html#contact" target="_blank">Contact Page</a>
+</div>
+            </div>
+        
+                <p class="textfooter"> 2026 RideShare </p>
+            
+        </div>
+    </footer>
+    <script>
+const tunisianCities = [
+    "Tunis", "Sfax", "Sousse", "Gabes", "Bizerte", "Nabeul",
+    "Kairouan", "Gafsa", "Monastir", "Ariana", "Ben Arous",
+    "Manouba", "Mahdia", "Kasserine", "Kebili", "Tozeur",
+    "Tataouine", "Siliana", "Zaghouan", "Jendouba", "Beja"
+];
+function isValidCity(city) {
+    return tunisianCities.some(c => c.toLowerCase() === city.toLowerCase());
+}
+ 
+document.querySelector(".btn-search").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    let fromInput = document.getElementById("from");
+    let toInput = document.getElementById("to");
+
+    let from = fromInput.value.trim();
+    let to = toInput.value.trim();
+    let date = document.getElementById("date").value;
+
+    // Reset styles
+    fromInput.classList.remove("input-error");
+    toInput.classList.remove("input-error");
+
+    // Validation
+    if (!from || !to || !date) {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    if (!isValidCity(from)) {
+        fromInput.classList.add("input-error");
+        alert("Invalid departure city (Tunisia only)");
+        return;
+    }
+
+    if (!isValidCity(to)) {
+        toInput.classList.add("input-error");
+        alert("Invalid destination city (Tunisia only)");
+        return;
+    }
+
+    // Save  FROM TO DATE 
+
+
+
+    // For demonstration
+    console.log("Searching rides from", from, "to", to, "on", date);
+     window.location.href = "find_ride.html";     
+
+});
+
+
+// ==========================
+// 5. NAVBAR SCROLL EFFECT  
+// ==========================   
+
+
+window.addEventListener("scroll", () => {
+    let navbar = document.querySelector(".navbar");
+
+    if (window.scrollY > 50) {
+        navbar.classList.add("scrolled");
+    } else {
+        navbar.classList.remove("scrolled");
+    }
+});
+
+// ==========================
+// 6. AUTO-FILL TODAY DATE
+// ==========================
+let dateInput = document.getElementById("date");
+let today = new Date().toISOString().split("T")[0];
+dateInput.value = today;
+
+// ==========================
+// 7. SWAP FROM/TO FIELDS
+// ==========================   
+document.getElementById("swap-btn").addEventListener("click", () => {
+    let fromInput = document.getElementById("from");
+    let toInput = document.getElementById("to");
+
+    let temp = fromInput.value;
+    fromInput.value = toInput.value;
+    toInput.value = temp;
+});
+
+
+
+
+
+
+
+    </script>
+
+
+</body>
+</html>

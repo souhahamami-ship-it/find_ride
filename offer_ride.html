@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideShare_Offer a Ride</title>
+    <link rel="stylesheet" href="offer_ride.css">
+</head>
+
+<body>
+
+     <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>RideShare</span>
+            </div>
+            <div class="nav-links">
+                <a href="home.html" >Home</a>
+                <a href="profile.html" >Profile</a>
+                <a href="find_ride.html" >Find Rides</a>
+                <a href="offer_ride.html" >Offer Ride</a>
+                <a href="login.html" >Login</a>
+                <a href="register.html" class="btn-primary">Sign Up</a> 
+            </div>
+        </div>
+    </nav>
+<div id="customAlert" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: none;
+    font-weight: bold;
+    z-index: 999;
+">
+</div>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Offer a Ride</h1>
+            <p>Share your journey and help others travel</p>
+        </div>
+    </section>
+
+    <!-- Offer Form -->
+    <section class="search-section">
+        <div class="container">
+            <div class="auth-container">
+
+                <form id="offerRideForm">
+
+                    <h2>Trip Details</h2>
+
+                    <!-- Route Information -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="departure">Departure City</label>
+                            <input type="text" id="departure" required placeholder="e.g., Tunis">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="arrival">Arrival City</label>
+                            <input type="text" id="arrival" required placeholder="e.g., Sousse">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="departureAddress">Departure Address / Point</label>
+                            <input type="text" id="departureAddress" required placeholder="Specific pickup location">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="arrivalAddress">Arrival Address / Point</label>
+                            <input type="text" id="arrivalAddress" required placeholder="Specific drop-off location">
+                        </div>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="time">Departure Time</label>
+                            <input type="time" id="time" required>
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+               <div class="form-group">
+    <label class="category-title">Category</label>
+
+    <div class="category-container">
+        <label class="category-item">
+            <input type="radio" name="category" value="carpool" required>
+            <span>Carpool</span>
+        </label>
+
+        <label class="category-item">
+            <input type="radio" name="category" value="taxi">
+            <span>Taxi</span>
+        </label>
+
+        <label class="category-item">
+            <input type="radio" name="category" value="collective-taxis">
+            <span>Collective Taxis</span>
+        </label>
+
+        <label class="category-item">
+            <input type="radio" name="category" value="bus">
+            <span>Bus</span>
+        </label>
+          <label class="category-item">
+            <input type="radio" name="category" value="moto">
+            <span>Moto</span>
+        </label>
+        
+    </div>
+</div>
+
+                    <!-- Capacity and Price -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="seats">Available Seats</label>
+                            <select id="seats" required>
+                                <option value="">Select seats</option>
+                                <option value="1">1 seat</option>
+                                <option value="2">2 seats</option>
+                                <option value="3">3 seats</option>
+                                <option value="4">4 seats</option>
+                                <option value="5">5 seats</option>
+                                <option value="6">6 seats</option>
+                                <option value="7">7 seats</option>
+                                <option value="8">8 seats</option>
+                                <option value="9+">9+ seats</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Price per Person (TND)</label>
+                            <input type="number" id="price" required placeholder="e.g., 15" min="1">
+                        </div>
+                    </div>
+
+            
+
+                    <h2 >Trip Preferences</h2>
+
+                    <!-- Conditions / Preferences -->
+                    <div class="form-group">
+                        <label>Ride Conditions(Select all that apply)</label>
+
+                        <div class="preferences-container">
+    <label class="checkbox-group">
+        <input type="checkbox" id="womenOnly">
+        <span>Women Only</span>
+    </label>
+
+    <label class="checkbox-group">
+        <input type="checkbox" id="noSmoking">
+        <span>No Smoking</span>
+    </label>
+
+    <label class="checkbox-group">
+        <input type="checkbox" id="petsAllowed">
+        <span>Pets Allowed</span>
+    </label>
+
+    <label class="checkbox-group">
+        <input type="checkbox" id="luggageOk">
+        <span>Large Luggage Allowed</span>
+    </label>
+
+    <label class="checkbox-group">
+        <input type="checkbox" id="musicOk">
+        <span>Music Allowed</span>
+    </label>
+
+    <label class="checkbox-group">
+        <input type="checkbox" id="quietRide">
+        <span>Quiet Ride Preferred</span>
+    </label>
+</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carInfo">Car Information</label>
+                        <input type="text" id="carInfo" placeholder="e.g., White Toyota Corolla 2020">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes (Optional)</label>
+                        <textarea id="notes" placeholder="Any additional information for passengers..."></textarea>
+                    </div>
+
+                    
+
+                    <button type="submit" class="btn-submit" id="submit_ride">Publish Ride</button>
+
+                    <p class="form-note">
+                        By publishing this ride, you agree to our driver terms and conditions.
+                    </p>
+
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>RideShare</h4>
+                    <p>Connecting travelers across Tunisia</p>
+                </div>
+                <div class="footer-section">
+    <h4>Quick Links</h4>
+    <a href="info.html#about" target="_blank">About Us</a>
+    <a href="info.html#safety" target="_blank">Safety</a>
+    <a href="info.html#support" target="_blank">Support</a>
+</div>
+
+<div class="footer-section">
+    <h4>Legal</h4>
+    <a href="info.html#terms" target="_blank">Terms of Service</a>
+    <a href="info.html#privacy" target="_blank">Privacy Policy</a>
+    <a href="info.html#cookies" target="_blank">Cookie Policy</a>
+</div>
+
+<div class="footer-section">
+    <h4>Contact Us</h4>
+    <a href="info.html#contact" target="_blank">Contact Page</a>
+</div>
+            </div>
+        
+                <p class="textfooter"> 2026 RideShare </p>
+            
+        </div>
+    </footer>
+    <script>
+const tunisianCities = [
+    "Tunis", "Sfax", "Sousse", "Gabes", "Bizerte", "Nabeul",
+    "Kairouan", "Gafsa", "Monastir", "Ariana", "Ben Arous",
+    "Manouba", "Mahdia", "Kasserine", "Kebili", "Tozeur",
+    "Tataouine", "Siliana", "Zaghouan", "Jendouba", "Beja"
+];
+function isValidCity(city) {
+    return tunisianCities.some(c => c.toLowerCase() === city.toLowerCase());
+}
+ 
+
+
+
+
+        document.getElementById("offerRideForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let departure = document.getElementById("departure").value.trim();
+    let arrival = document.getElementById("arrival").value.trim();
+    let departureAddress = document.getElementById("departureAddress").value;
+let arrivalAddress = document.getElementById("arrivalAddress").value;
+    let date = document.getElementById("date").value;
+    let time = document.getElementById("time").value;
+    let seats = document.getElementById("seats").value;
+    let price = document.getElementById("price").value;
+let categoryInput = document.querySelector('input[name="category"]:checked');
+
+
+if (!categoryInput) {   //  correct check
+    alert("Please select a category!");
+    return;
+}
+
+let category = categoryInput.value;
+
+    //  Preferences object (FIXED)
+let preferences = {
+    womenOnly: document.getElementById("womenOnly").checked,
+    noSmoking: document.getElementById("noSmoking").checked,
+    petsAllowed: document.getElementById("petsAllowed").checked,
+    luggageOk: document.getElementById("luggageOk").checked,
+    musicOk: document.getElementById("musicOk").checked,
+    quietRide: document.getElementById("quietRide").checked
+};
+
+//  Other fields
+let carInfo = document.getElementById("carInfo").value;
+let notes = document.getElementById("notes").value;
+
+
+        
+
+    if (!departure || !arrival || !date || !time || !seats || !price) {
+        alert("Please fill all required fields!");
+        return;
+    }
+
+    if (departure.toLowerCase() === arrival.toLowerCase()) {
+        alert("Departure and arrival cannot be the same!");
+        return;
+    }
+    if (!isValidCity(departure) || !isValidCity(arrival)) {
+    alert("Only Tunisian cities allowed!");
+    return;
+}
+//  Create ride object
+let ride = {
+      id: Date.now(), // unique id
+    departure,
+    arrival,
+     departureAddress,
+    arrivalAddress,
+    date,
+    time,
+    seats,
+    price,
+    category,
+    preferences,
+    carInfo,
+    notes
+};
+
+
+//  CORRECT ORDER
+alert(" Ride saved successfully!");
+this.reset();
+
+});
+// ==========================
+// 5. NAVBAR SCROLL EFFECT  
+// ==========================   
+
+
+window.addEventListener("scroll", () => {
+    let navbar = document.querySelector(".navbar");
+
+    if (window.scrollY > 50) {
+        navbar.classList.add("scrolled");
+    } else {
+        navbar.classList.remove("scrolled");
+    }
+});
+
+// 6. AUTO-FILL TODAY DATE
+// ==========================
+let dateInput = document.getElementById("date");
+let today = new Date().toISOString().split("T")[0];
+
+dateInput.value = today;
+dateInput.min = today; //  prevents past dates
+
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Rides - RideShare</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="find_ride.css">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <div class="nav-brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+        <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      RideShare
+    </div>
+    <div class="nav-links">
+      <a href="home.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="find_ride.html">Find Rides</a>
+      <a href="offer_ride.html">Offer Ride</a>
+      <a href="login.html">Login</a>
+      <a href="register.html" class="btn-primary">Sign Up</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Find Your Perfect Ride</h1>
+    <p>Browse available rides and connect with verified drivers</p>
+  </div>
+</section>
+
+<section class="search-section">
+  <div class="container">
+    <div class="search-filters">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="from">From</label>
+          <input type="text" id="from" placeholder="Departure city" list="cities-from">
+          <datalist id="cities-from"></datalist>
+        </div>
+        <div class="filter-group">
+          <label for="to">To</label>
+          <input type="text" id="to" placeholder="Arrival city" list="cities-to">
+          <datalist id="cities-to"></datalist>
+        </div>
+        <div class="filter-group">
+          <label for="date">Date</label>
+          <input type="date" id="date">
+        </div>
+        <div class="filter-group">
+          <label for="seats">Seats Needed</label>
+          <select id="seats">
+            <option>Any</option><option>1</option><option>2</option><option>3</option><option>4+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="max-price">Max Price (TND)</label>
+          <input type="number" id="max-price" placeholder="Any" min="0">
+        </div>
+        <div class="filter-group">
+          <label for="condition">Conditions</label>
+          <select id="condition">
+            <option value="">Any</option>
+            <option>Women Only</option>
+            <option>No Smoking</option>
+            <option>Pets Allowed</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="v">Vehicle Type</label>
+          <select id="v">
+            <option value="">Any</option>
+            <option>Car</option><option>Collective Taxi</option>
+            <option>Taxi</option><option>Moto</option><option>Mini Bus</option>
+          </select>
+        </div>
+        <div class="filter-group" style="justify-content:flex-end;">
+          <button onclick="searchRides()" class="btn-primary">Search Rides</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rides-list" id="rides-list">
+      <!-- Card 1 -->
+      <div class="ride-card" data-from="tunis" data-to="sousse" data-price="15" data-seats="3" data-conditions="women only,no smoking,music ok">
+        <div class="ride-header">
+          <div class="ride-driver">
+            <div class="driver-avatar">S</div>
+            <div class="driver-info">
+              <h3>Sarah Mansour</h3>
+              <div class="driver-rating">★★★★★ <span>4.9 (127 trips)</span></div>
+            </div>
+          </div>
+          <div class="ride-price">
+            <div class="price-amount">15 TND</div>
+            <div class="price-label">per person</div>
+          </div>
+        </div>
+        <div class="ride-details">
+          <div class="ride-location"><h4>Tunis</h4><p>Avenue Habib Bourguiba</p><p>Today, 14:30</p></div>
+          <div class="ride-arrow"></div>
+          <div class="ride-location"><h4>Sousse</h4><p>City Center</p><p>Today, 16:30</p></div>
+        </div>
+        <div class="ride-meta">
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg><span>3 seats available</span></div>
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg><span>2h trip</span></div>
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg><span>Verified</span></div>
+        </div>
+        <div class="ride-conditions">
+          <span class="condition-badge">Women Only</span>
+          <span class="condition-badge">No Smoking</span>
+          <span class="condition-badge">Music OK</span>
+        </div>
+        <div class="ride-actions">
+          <button class="btn-book" onclick="bookRide(this)">Book This Ride</button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="ride-card" data-from="tunis" data-to="sousse" data-price="12" data-seats="2" data-conditions="no smoking,luggage ok,quiet ride">
+        <div class="ride-header">
+          <div class="ride-driver">
+            <div class="driver-avatar" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);">A</div>
+            <div class="driver-info">
+              <h3>Ahmed Khalil</h3>
+              <div class="driver-rating">★★★★★ <span>5.0 (84 trips)</span></div>
+            </div>
+          </div>
+          <div class="ride-price">
+            <div class="price-amount">12 TND</div>
+            <div class="price-label">per person</div>
+          </div>
+        </div>
+        <div class="ride-details">
+          <div class="ride-location"><h4>Tunis</h4><p>Gare Routière Nord</p><p>Tomorrow, 08:00</p></div>
+          <div class="ride-arrow"></div>
+          <div class="ride-location"><h4>Sousse</h4><p>Port El Kantaoui</p><p>Tomorrow, 10:00</p></div>
+        </div>
+        <div class="ride-meta">
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg><span>2 seats available</span></div>
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg><span>2h trip</span></div>
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg><span>Verified</span></div>
+        </div>
+        <div class="ride-conditions">
+          <span class="condition-badge">No Smoking</span>
+          <span class="condition-badge">Luggage OK</span>
+          <span class="condition-badge">Quiet Ride</span>
+        </div>
+        <div class="ride-actions">
+          <button class="btn-book" onclick="bookRide(this)">Book This Ride</button>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="ride-card" data-from="tunis" data-to="sousse" data-price="18" data-seats="1" data-conditions="women only,pets allowed">
+        <div class="ride-header">
+          <div class="ride-driver">
+            <div class="driver-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">L</div>
+            <div class="driver-info">
+              <h3>Leila Ben Ali</h3>
+              <div class="driver-rating">★★★★☆ <span>4.7 (56 trips)</span></div>
+            </div>
+          </div>
+          <div class="ride-price">
+            <div class="price-amount">18 TND</div>
+            <div class="price-label">per person</div>
+          </div>
+        </div>
+        <div class="ride-details">
+          <div class="ride-location"><h4>Tunis</h4><p>La Marsa</p><p>Feb 12, 15:00</p></div>
+          <div class="ride-arrow"></div>
+          <div class="ride-location"><h4>Sousse</h4><p>Sousse Ville</p><p>Feb 12, 17:30</p></div>
+        </div>
+        <div class="ride-meta">
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg><span>1 seat available</span></div>
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg><span>2.5h trip</span></div>
+          <div class="meta-item"><svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg><span>Verified</span></div>
+        </div>
+        <div class="ride-conditions">
+          <span class="condition-badge">Women Only</span>
+          <span class="condition-badge">Pets Allowed</span>
+        </div>
+        <div class="ride-actions">
+          <button class="btn-book" onclick="bookRide(this)">Book This Ride</button>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" id="no-results">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <p style="font-size:1.1rem;font-weight:600;font-family:'Unbounded',sans-serif;">No rides found</p>
+      <p style="margin-top:.4rem;font-size:.9rem;">Try adjusting your filters</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>RideShare</h4>
+      <p>Connecting travelers across Tunisia</p>
+    </div>
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <a href="info.html#about">About Us</a>
+      <a href="info.html#safety">Safety</a>
+      <a href="info.html#support">Support</a>
+    </div>
+    <div class="footer-section">
+      <h4>Legal</h4>
+      <a href="info.html#terms">Terms of Service</a>
+      <a href="info.html#privacy">Privacy Policy</a>
+      <a href="info.html#cookies">Cookie Policy</a>
+    </div>
+    <div class="footer-section">
+      <h4>Contact Us</h4>
+      <a href="info.html#contact">Contact Page</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 RideShare</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tunisianCities = [
+  "Tunis","Sfax","Sousse","Gabes","Bizerte","Nabeul","Kairouan","Gafsa",
+  "Monastir","Ariana","Ben Arous","Manouba","Mahdia","Kasserine","Kebili",
+  "Tozeur","Tataouine","Siliana","Zaghouan","Jendouba","Beja"
+];
+
+['cities-from','cities-to'].forEach(id => {
+  const dl = document.getElementById(id);
+  tunisianCities.forEach(c => { const o = document.createElement('option'); o.value = c; dl.appendChild(o); });
+});
+
+function isValidCity(city) {
+  if (!city) return true;
+  return tunisianCities.some(c => c.toLowerCase() === city.toLowerCase());
+}
+
+function showToast(msg, duration = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function searchRides() {
+  const from = document.getElementById("from").value.trim();
+  const to = document.getElementById("to").value.trim();
+  const maxPrice = parseFloat(document.getElementById("max-price").value) || Infinity;
+  const seats = document.getElementById("seats").value;
+  const condition = document.getElementById("condition").value.toLowerCase();
+
+  if (from && !isValidCity(from)) { showToast(`"${from}" is not a valid Tunisian city.`); return; }
+  if (to && !isValidCity(to)) { showToast(`"${to}" is not a valid Tunisian city.`); return; }
+  if (from && to && from.toLowerCase() === to.toLowerCase()) { showToast("Departure and arrival cities must be different."); return; }
+
+  const cards = document.querySelectorAll('.ride-card');
+  let visible = 0;
+  cards.forEach(card => {
+    let match = true;
+    if (from && card.dataset.from !== from.toLowerCase()) match = false;
+    if (to && card.dataset.to !== to.toLowerCase()) match = false;
+    if (parseFloat(card.dataset.price) > maxPrice) match = false;
+    if (seats !== "Any") {
+      const needed = seats === "4+" ? 4 : parseInt(seats);
+      if (parseInt(card.dataset.seats) < needed) match = false;
+    }
+    if (condition && condition !== "any" && !card.dataset.conditions.includes(condition)) match = false;
+    card.style.display = match ? "block" : "none";
+    if (match) visible++;
+  });
+
+  document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  if (visible > 0) showToast(`${visible} ride${visible > 1 ? 's' : ''} found`);
+}
+
+function bookRide(btn) {
+  btn.textContent = "✓ Booked!";
+  btn.style.background = "#059669";
+  btn.disabled = true;
+  showToast("Ride booked! The driver will contact you.");
+}
+
+
+
+const ridesList = document.getElementById("ridesList");
+
+        let rides =  [];
+
+        if (rides.length === 0) {
+            ridesList.innerHTML = "<p class='empty'>No rides found.</p>";
+        } else {
+            rides.forEach(ride => {
+                let rideCard = document.createElement("div");
+                rideCard.classList.add("ride-card");
+
+                rideCard.innerHTML = `
+                    <h3>${ride.departure} → ${ride.arrival}</h3>
+                    <p><strong>Date:</strong> ${ride.date} at ${ride.time}</p>
+                    <p><strong>Seats:</strong> ${ride.seats}</p>
+                    <p><strong>Price:</strong> ${ride.price} TND</p>
+                    <p><strong>Category:</strong> ${ride.category}</p>
+                    <button onclick="bookRide(${ride.id})">Book</button>
+                `;
+
+                ridesList.appendChild(rideCard);
+            });
+        }
+
+        function bookRided(id) {
+            let bookings =  [];
+            let rides =  [];
+
+            let selectedRide = rides.find(r => r.id === id);
+
+            if (!selectedRide) {
+                alert("Ride not found!");
+                return;
+            }
+
+            bookings.push(selectedRide);
+      
+
+            alert("Ride booked successfully!");
+        }
+
+window.addEventListener("scroll", () => {
+  document.getElementById("navbar").classList.toggle("scrolled", window.scrollY > 50);
+});
+</script>
+</body>
+</html>

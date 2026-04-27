@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - RideShare</title>
+    <link href="register.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>RideShare</span>
+            </div>
+            <div class="nav-links">
+                <a href="home.html" >Home</a>
+                <a href="profile.html" >Profile</a>
+                <a href="find_ride.html" >Find Rides</a>
+                <a href="offer_ride.html" >Offer Ride</a>
+                <a href="login.html" >Login</a>
+                <a href="register.html" class="btn-primary">Sign Up</a> 
+            </div>
+        </div>
+    </nav>
+    <section class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join the RideShare community today</p>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" required placeholder="Ahmed">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" required placeholder="Mansour">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="your.email@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="+216 XX XXX XXX">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required placeholder="Min. 8 characters">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" required placeholder="Re-enter password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="userType">I want to:</label>
+                    <select id="userType" required>
+                        <option value="">Select an option</option>
+                        <option value="both">Both offer and search for rides</option>
+                        <option value="driver">Only offer rides (Driver)</option>
+                        <option value="passenger">Only search for rides (Passenger)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vhe">Vehicle Type</label>
+                    <select id="vhe" required>
+                        <option value="">Select an option</option>
+                        <option value="car">Personnal Car</option>
+                        <option value="louage">Mini Bus</option>
+                        <option value="Taxi">Taxi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cin">CIN Number (Private - for verification only)</label>
+                    <input type="text" id="cin" required placeholder="XXXXXXXX">
+                    <small>This information is kept private and used only for identity verification</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address (Private)</label>
+                    <input type="text" id="address" required placeholder="Your address">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the Terms of Service and Privacy Policy</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="newsletter">
+                    <label for="newsletter">Send me updates and travel tips</label>
+                </div>
+
+                <button type="submit" class="btn-submit">Create Account</button>
+                <button type="reset" class="btn-reset">Reset</button>
+
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="login.html">Login here</a></p>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>RideShare</h4>
+                    <p>Connecting travelers across Tunisia</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="info.html#about" target="_blank">About Us</a>
+                    <a href="info.html#safety" target="_blank">Safety</a>
+                    <a href="info.html#support" target="_blank">Support</a>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="info.html#terms" target="_blank">Terms of Service</a>
+                    <a href="info.html#privacy" target="_blank">Privacy Policy</a>
+                    <a href="info.html#cookies" target="_blank">Cookie Policy</a>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <a href="info.html#contact" target="_blank">Contact Page</a>
+                </div>
+            </div>
+        
+            <p class="textfooter">2026 RideShare</p>
+        </div>
+    </footer>
+
+
+
+
+           <script>
+        // Navbar scroll effect
+       
+
+window.addEventListener("scroll", () => {
+    let navbar = document.querySelector(".navbar");
+
+    if (window.scrollY > 50) {
+        navbar.classList.add("scrolled");
+    } else {
+        navbar.classList.remove("scrolled");
+    }
+});
+
+//
+function handleRegister(event) {
+    event.preventDefault();
+
+    // Get values
+    const firstName = document.getElementById("firstName").value.trim();
+    const lastName = document.getElementById("lastName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const userType = document.getElementById("userType").value;
+    const vehicle = document.getElementById("vhe").value;
+    const cin = document.getElementById("cin").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const terms = document.getElementById("terms").checked;
+
+    //  Email validation (must contain @ and .)
+    if (!email.includes("@") || !email.includes(".")) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
+    //  Phone validation (must start with +216 and be 12 chars total)
+    const phoneRegex = /^\+216\d{8}$/;
+    if (!phoneRegex.test(phone)) {
+        alert("Phone must start with +216 followed by 8 digits.");
+        return;
+    }
+
+    //  CIN validation (exactly 8 digits)
+    const cinRegex = /^\d{8}$/;
+    if (!cinRegex.test(cin)) {
+        alert("CIN must be exactly 8 digits.");
+        return;
+    }
+
+    // Other checks
+    if (!terms) {
+        alert("You must agree to the Terms of Service.");
+        return;
+    }
+
+    if (password.length < 8) {
+        alert("Password must be at least 8 characters.");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    if (!userType || !vehicle) {
+        alert("Please select all required options.");
+        return;
+    }
+
+    // Create user object
+    const user = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        userType,
+        vehicle,
+        cin,
+        address
+    };
+//save USER
+
+
+//
+window.location.href = "home.html";
+
+
+}
+
+
+
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - RideShare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="profile.css" rel="stylesheet">
+</head>
+<body>
+
+ 
+
+    <!-- ================================
+         NAVIGATION
+         ================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>RideShare</span>
+            </div>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="profile.html" class="active">Profile</a>
+                <a href="find_ride.html">Find Rides</a>
+                <a href="offer_ride.html">Offer Ride</a>
+                <a href="login.html">Login</a>
+                <a href="register.html" class="btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================================
+         PROFILE HEADER
+         ================================ -->
+    <section class="profile-header">
+        <div class="container">
+            <div class="profile-info">
+
+                <!-- Avatar with upload -->
+                <div class="avatar-wrapper" title="Cliquez pour changer la photo" onclick="triggerAvatarUpload()">
+                    <div class="profile-avatar-large" id="profile-avatar">SM</div>
+                    <div class="avatar-upload-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                        <span>Changer</span>
+                    </div>
+                    <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+                </div>
+
+                <div class="profile-details">
+                    <h1 id="display-name">Sarah Mansour</h1>
+                    <div class="driver-rating">★★★★★ 4.9 (127 trips)</div>
+                    <p>Member since January 2023 • <span class="verified-badge">✓ Verified Driver</span></p>
+                </div>
+
+                <!-- Edit Profile button in header -->
+                <button class="btn-edit-profile" onclick="toggleEditMode()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    <span id="edit-btn-text">Modifier le profil</span>
+                </button>
+            </div>
+
+            <!-- Animated Stats -->
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-trips" data-target="127">0</div>
+                    <div class="stat-label">Total Trips</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-rating" data-target="4.9" data-decimal="1">0</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-response" data-target="98" data-suffix="%">0%</div>
+                    <div class="stat-label">Response Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-offers" data-target="5">0</div>
+                    <div class="stat-label">Active Offers</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================
+         PROFILE CONTENT
+         ================================ -->
+    <section class="profile-section">
+        <div class="container">
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('info', this)">Personal Info</button>
+                <button class="tab" onclick="switchTab('rides', this)">My Rides</button>
+                <button class="tab" onclick="switchTab('bookings', this)">My Bookings</button>
+                <button class="tab" onclick="switchTab('reviews', this)">Reviews</button>
+            </div>
+
+            <!-- ============================================================
+                 TAB: PERSONAL INFO
+                 ============================================================ -->
+            <div id="info-tab" class="tab-content active">
+
+            
+
+                <!-- Public Info -->
+                <div class="profile-card">
+                    <div class="card-header-row">
+                        <h2>Public Information</h2>
+                        <div class="edit-actions" id="info-edit-actions" style="display:none">
+                            <button class="btn-save" onclick="saveAllFields()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                Enregistrer tout
+                            </button>
+                            <button class="btn-discard" onclick="discardAllFields()">Annuler</button>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item" data-field="fullname">
+                            <span class="info-label">Full Name</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value" id="field-fullname">Sarah Mansour</span>
+                                <button class="btn-field-edit" onclick="editField('fullname')">Modifier</button>
+                            </div>
+                        </div>
+                        <div class="info-item" data-field="email">
+                            <span class="info-label">Email</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value" id="field-email">sarah.mansour@email.com</span>
+                                <button class="btn-field-edit" onclick="editField('email')">Modifier</button>
+                            </div>
+                        </div>
+                        <div class="info-item" data-field="phone">
+                            <span class="info-label">Phone</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value" id="field-phone">+216 XX XXX XXX</span>
+                                <button class="btn-field-edit" onclick="editField('phone')">Modifier</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Account Type</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value">Driver & Passenger</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Member Since</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value">January 15, 2023</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Verification Status</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value verified">✓ Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Private Info -->
+                <div class="profile-card">
+                    <div class="card-header-row">
+                        <div>
+                            <h2>Private Information</h2>
+                            <p class="card-subtitle">This information is kept private and used only for verification</p>
+                        </div>
+                        <button class="btn-toggle-private" id="toggle-private-btn" onclick="togglePrivateInfo()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eye-icon">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Afficher
+                        </button>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">CIN Number</span>
+                            <span class="info-value private-value" id="cin-value" data-real="08123456">••••••08</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Address</span>
+                            <span class="info-value private-value" id="address-value" data-real="12 Rue Ibn Khaldoun, Tunis">Tunis, Tunisia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="profile-card">
+                    <h2>Preferences</h2>
+                    <div class="info-grid">
+                        <div class="info-item" data-field="music">
+                            <span class="info-label">Music Preference</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value" id="field-music">Classical & Jazz</span>
+                                <button class="btn-field-edit" onclick="editField('music')">Modifier</button>
+                            </div>
+                        </div>
+                        <div class="info-item" data-field="conversation">
+                            <span class="info-label">Conversation Level</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value" id="field-conversation">Moderate</span>
+                                <button class="btn-field-edit" onclick="editField('conversation')">Modifier</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Smoking</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value">Non-smoker</span>
+                                <button class="btn-toggle-pref" id="smoking-toggle" onclick="togglePreference('smoking-toggle', 'Fumeur', 'Non-fumeur')">Changer</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Pets</span>
+                            <div class="info-value-wrap">
+                                <span class="info-value">No pets</span>
+                                <button class="btn-toggle-pref" id="pets-toggle" onclick="togglePreference('pets-toggle', 'Animaux OK', 'Sans animaux')">Changer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============================================================
+                 TAB: MY RIDES
+                 ============================================================ -->
+            <div id="rides-tab" class="tab-content">
+                <div class="profile-card">
+                    <div class="card-header-row">
+                        <h2>Active Ride Offers</h2>
+                        <button class="btn-add-ride" onclick="showToast('Redirection vers la page Offer Ride...', 'info')">
+                            + Proposer un trajet
+                        </button>
+                    </div>
+                    <div class="rides-list" id="rides-list">
+
+                        <div class="ride-card" id="ride-1">
+                            <div class="ride-status-bar">
+                                <span class="ride-status active">● Actif</span>
+                                <span class="ride-id">#RD-2024-001</span>
+                            </div>
+                            <div class="ride-details">
+                                <div class="ride-location">
+                                    <h4>Tunis</h4>
+                                    <p>Aujourd'hui, 14:30</p>
+                                </div>
+                                <div class="ride-arrow-wrap">
+                                    <div class="ride-arrow"></div>
+                                    <span class="ride-duration">2h</span>
+                                </div>
+                                <div class="ride-location">
+                                    <h4>Sousse</h4>
+                                    <p>Aujourd'hui, 16:30</p>
+                                </div>
+                            </div>
+                            <div class="ride-meta">
+                                <div class="meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    3 places disponibles
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    15 TND / personne
+                                </div>
+                                <div class="meta-item pending">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 15 19.79 19.79 0 0 1 1.61 6.18 2 2 0 0 1 3.6 4h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 11a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 18.41"/></svg>
+                                    2 réservations en attente
+                                </div>
+                            </div>
+                            <div class="ride-actions">
+                                <button class="btn-edit" onclick="editRide('ride-1')">Modifier</button>
+                                <button class="btn-message" onclick="viewBookings('ride-1')">Voir les réservations</button>
+                                <button class="btn-message btn-danger" onclick="cancelRide('ride-1')">Annuler le trajet</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 TAB: MY BOOKINGS
+                 ============================================================ -->
+            <div id="bookings-tab" class="tab-content">
+                <div class="profile-card">
+                    <div class="card-header-row">
+                        <h2>My Bookings</h2>
+                        <!-- Filter buttons -->
+                        <div class="filter-group">
+                            <button class="filter-btn active" onclick="filterBookings('all', this)">Tous</button>
+                            <button class="filter-btn" onclick="filterBookings('confirmed', this)">Confirmés</button>
+                            <button class="filter-btn" onclick="filterBookings('pending', this)">En attente</button>
+                            <button class="filter-btn" onclick="filterBookings('cancelled', this)">Annulés</button>
+                        </div>
+                    </div>
+                    <div class="rides-list" id="bookings-list">
+
+                        <div class="ride-card" id="booking-1" data-status="confirmed">
+                            <div class="ride-header">
+                                <div class="ride-driver">
+                                    <div class="driver-avatar">A</div>
+                                    <div class="driver-info">
+                                        <h3>Ahmed Khalil</h3>
+                                        <div class="driver-rating">★★★★★ 5.0</div>
+                                    </div>
+                                </div>
+                                <div class="condition-badge badge-success">Confirmé</div>
+                            </div>
+                            <div class="ride-details">
+                                <div class="ride-location">
+                                    <h4>Sfax</h4>
+                                    <p>15 Fév, 08:00</p>
+                                </div>
+                                <div class="ride-arrow-wrap">
+                                    <div class="ride-arrow"></div>
+                                    <span class="ride-duration">3h</span>
+                                </div>
+                                <div class="ride-location">
+                                    <h4>Tunis</h4>
+                                    <p>15 Fév, 11:00</p>
+                                </div>
+                            </div>
+                            <div class="ride-actions">
+                                <button class="btn-message" onclick="messageDriver('Ahmed Khalil')">Message Driver</button>
+                                <button class="btn-message btn-danger" onclick="cancelBooking('booking-1')">Cancel Booking</button>
+                            </div>
+                        </div>
+
+                        <div class="ride-card" id="booking-2" data-status="pending">
+                            <div class="ride-header">
+                                <div class="ride-driver">
+                                    <div class="driver-avatar">M</div>
+                                    <div class="driver-info">
+                                        <h3>Meriem Ben Ali</h3>
+                                        <div class="driver-rating">★★★★☆ 4.5</div>
+                                    </div>
+                                </div>
+                                <div class="condition-badge badge-pending">En attente</div>
+                            </div>
+                            <div class="ride-details">
+                                <div class="ride-location">
+                                    <h4>Tunis</h4>
+                                    <p>20 Fév, 09:00</p>
+                                </div>
+                                <div class="ride-arrow-wrap">
+                                    <div class="ride-arrow"></div>
+                                    <span class="ride-duration">2h</span>
+                                </div>
+                                <div class="ride-location">
+                                    <h4>Nabeul</h4>
+                                    <p>20 Fév, 11:00</p>
+                                </div>
+                            </div>
+                            <div class="ride-actions">
+                                <button class="btn-message" onclick="messageDriver('Meriem Ben Ali')">Message Driver</button>
+                                <button class="btn-message btn-danger" onclick="cancelBooking('booking-2')">Cancel Booking</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="no-bookings-msg" class="empty-state" style="display:none">
+                        <p>Aucune réservation dans cette catégorie.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 TAB: REVIEWS
+                 ============================================================ -->
+            <div id="reviews-tab" class="tab-content">
+                <div class="profile-card">
+                    <div class="card-header-row">
+                        <h2>Reviews from Passengers</h2>
+                        <div class="reviews-search-wrap">
+                            <input
+                                type="text"
+                                class="reviews-search"
+                                placeholder="Rechercher dans les avis..."
+                                oninput="filterReviews(this.value)"
+                                id="reviews-search-input"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Rating summary -->
+                    <div class="rating-summary">
+                        <div class="rating-big">
+                            <span class="rating-num">4.9</span>
+                            <div class="rating-stars-big">★★★★★</div>
+                            <span class="rating-count">127 avis</span>
+                        </div>
+                        <div class="rating-bars">
+                            <div class="rating-bar-row">
+                                <span>5 ★</span>
+                                <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:88%"></div></div>
+                                <span>88%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span>4 ★</span>
+                                <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:9%"></div></div>
+                                <span>9%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span>3 ★</span>
+                                <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:3%"></div></div>
+                                <span>3%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span>2 ★</span>
+                                <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:0%"></div></div>
+                                <span>0%</span>
+                            </div>
+                            <div class="rating-bar-row">
+                                <span>1 ★</span>
+                                <div class="rating-bar-wrap"><div class="rating-bar-fill" style="width:0%"></div></div>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reviews-list" id="reviews-list">
+
+                        <div class="review-item" data-keywords="excellent ponctuel propre confortable">
+                            <div class="review-header">
+                                <div class="review-author-info">
+                                    <div class="review-avatar">M</div>
+                                    <span class="review-author">Mohamed A.</span>
+                                </div>
+                                <span class="review-stars">★★★★★ 5.0</span>
+                            </div>
+                            <p class="review-text">"Excellent driver! Very punctual and friendly. The car was clean and comfortable. Would definitely ride with Sarah again!"</p>
+                            <div class="review-footer">
+                                <div class="review-meta">Trip: Tunis → Sousse • 5 Fév, 2024</div>
+                                <button class="btn-helpful" onclick="markHelpful(this)">👍 Utile</button>
+                            </div>
+                        </div>
+
+                        <div class="review-item" data-keywords="safe driver respectful women experience">
+                            <div class="review-header">
+                                <div class="review-author-info">
+                                    <div class="review-avatar">A</div>
+                                    <span class="review-author">Amira K.</span>
+                                </div>
+                                <span class="review-stars">★★★★★ 5.0</span>
+                            </div>
+                            <p class="review-text">"Great experience! Sarah is a safe driver and very respectful. Perfect for women-only rides."</p>
+                            <div class="review-footer">
+                                <div class="review-meta">Trip: Sousse → Tunis • 1 Fév, 2024</div>
+                                <button class="btn-helpful" onclick="markHelpful(this)">👍 Utile</button>
+                            </div>
+                        </div>
+
+                        <div class="review-item" data-keywords="retard delay departure communicated trip global">
+                            <div class="review-header">
+                                <div class="review-author-info">
+                                    <div class="review-avatar">Y</div>
+                                    <span class="review-author">Youssef M.</span>
+                                </div>
+                                <span class="review-stars">★★★★☆ 4.0</span>
+                            </div>
+                            <p class="review-text">"Good trip overall. Departure was slightly delayed but Sarah communicated well."</p>
+                            <div class="review-footer">
+                                <div class="review-meta">Trip: Tunis → Nabeul • 28 Jan, 2024</div>
+                                <button class="btn-helpful" onclick="markHelpful(this)">👍 Utile</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="no-reviews-msg" class="empty-state" style="display:none">
+                        Aucun avis ne correspond à votre recherche.
+                    </div>
+
+                    <!-- Add a review form -->
+                    <div class="add-review-section">
+                        <h3>Laisser un avis</h3>
+                        <!-- Replace your existing stars row with this -->
+<div class="stars-input-row" onmouseleave="resetReviewRating()">
+    <span class="star-btn" data-value="1" onclick="setReviewRating(1)" onmouseenter="hoverReviewRating(1)">★</span>
+    <span class="star-btn" data-value="2" onclick="setReviewRating(2)" onmouseenter="hoverReviewRating(2)">★</span>
+    <span class="star-btn" data-value="3" onclick="setReviewRating(3)" onmouseenter="hoverReviewRating(3)">★</span>
+    <span class="star-btn" data-value="4" onclick="setReviewRating(4)" onmouseenter="hoverReviewRating(4)">★</span>
+    <span class="star-btn" data-value="5" onclick="setReviewRating(5)" onmouseenter="hoverReviewRating(5)">★</span>
+    <span class="rating-hint" id="rating-hint">Sélectionnez une note</span>
+</div>
+                        <div class="review-textarea-wrap">
+                            <textarea
+                                id="review-textarea"
+                                class="review-textarea"
+                                placeholder="Partagez votre expérience..."
+                                maxlength="300"
+                                oninput="onReviewInput()"
+                            ></textarea>
+                            <span class="char-counter" id="char-counter">0 / 300</span>
+                        </div>
+                        <button class="btn-submit-review" id="submit-review-btn" onclick="submitReview()" disabled>
+                            Soumettre l'avis
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================================
+         FOOTER
+         ================================ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>RideShare</h4>
+                    <p>Connecting travelers across Tunisia</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="info.html#about">About Us</a>
+                    <a href="info.html#safety">Safety</a>
+                    <a href="info.html#support">Support</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="info.html#terms">Terms of Service</a>
+                    <a href="info.html#privacy">Privacy Policy</a>
+                    <a href="info.html#cookies">Cookie Policy</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <a href="info.html#contact">Contact Page</a>
+                </div>
+            </div>
+            <p class="footer-bottom">© 2026 RideShare</p>
+        </div>
+    </footer>
+
+    <script>
+
+    /* =========================================================
+       1. NAVBAR — scroll effect
+       ========================================================= */
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+
+    /* =========================================================
+       2. TABS — switch between Personal Info, Rides, etc.
+       ========================================================= */
+    function switchTab(tabName, clickedBtn) {
+        // Désactiver tous les tabs et contenus
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        // Activer le tab cliqué
+        clickedBtn.classList.add('active');
+        document.getElementById(tabName + '-tab').classList.add('active');
+    }
+
+
+    /* =========================================================
+       3. TOAST NOTIFICATIONS
+       ========================================================= */
+    function showToast(message, type = 'success') {
+        const area = document.getElementById('toast-area');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+
+        const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+        toast.innerHTML = `<span class="toast-icon">${icons[type] || '✓'}</span><span>${message}</span>`;
+
+        area.appendChild(toast);
+
+        // Déclencher l'animation d'entrée
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => toast.classList.add('show'));
+        });
+
+        // Supprimer après 3 secondes
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 3000);
+    }
+
+
+    /* =========================================================
+       4. MODAL DE CONFIRMATION
+       ========================================================= */
+    function openModal(title, body, confirmText, onConfirm, isDanger = true) {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-body').textContent = body;
+        const confirmBtn = document.getElementById('modal-confirm-btn');
+        confirmBtn.textContent = confirmText || 'Confirmer';
+        confirmBtn.className = isDanger ? 'btn-modal-confirm danger' : 'btn-modal-confirm';
+        confirmBtn.onclick = () => { closeModal(); onConfirm(); };
+        document.getElementById('modal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('open');
+    }
+
+    // Fermer le modal en cliquant sur l'overlay
+    function handleModalOverlayClick(e) {
+        if (e.target === document.getElementById('modal')) {
+            closeModal();
+        }
+    }
+
+    // Fermer avec Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+
+    /* =========================================================
+       5. STATS — animation au chargement
+       ========================================================= */
+    function animateStats() {
+        const stats = document.querySelectorAll('.stat-number[data-target]');
+        const duration = 1500;
+        const start = performance.now();
+
+        function step(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // Easing: easeOutCubic
+            const ease = 1 - Math.pow(1 - progress, 3);
+
+            stats.forEach(el => {
+                const target = parseFloat(el.dataset.target);
+                const decimal = parseInt(el.dataset.decimal) || 0;
+                const suffix = el.dataset.suffix || '';
+                const value = target * ease;
+                el.textContent = value.toFixed(decimal) + suffix;
+            });
+
+            if (progress < 1) requestAnimationFrame(step);
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    // Lancer l'animation au chargement de la page
+    window.addEventListener('load', animateStats);
+
+
+    /* =========================================================
+       6. AVATAR — upload et prévisualisation
+       ========================================================= */
+    function triggerAvatarUpload() {
+        document.getElementById('avatar-input').click();
+    }
+
+    function handleAvatarUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Validation du type de fichier
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showToast('Format invalide. Utilisez JPG, PNG ou WebP.', 'error');
+            return;
+        }
+
+        // Validation de la taille (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Image trop grande. Maximum 5MB.', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            const avatar = document.getElementById('profile-avatar');
+            avatar.style.backgroundImage = `url(${e.target.result})`;
+            avatar.style.backgroundSize = 'cover';
+            avatar.style.backgroundPosition = 'center';
+            avatar.textContent = '';
+            showToast('Photo de profil mise à jour !', 'success');
+            updateCompletionBar();
+        };
+        reader.readAsDataURL(file);
+    }
+
+
+    /* =========================================================
+       7. ÉDITION INLINE DES CHAMPS
+       ========================================================= */
+    const originalValues = {};  // Stocker les valeurs originales pour "Annuler"
+
+    function editField(fieldId) {
+        const valueEl = document.getElementById('field-' + fieldId);
+        const btn = valueEl.closest('.info-value-wrap').querySelector('.btn-field-edit');
+
+        if (btn.textContent === 'Modifier') {
+            // Passer en mode édition
+            originalValues[fieldId] = valueEl.textContent;
+            const input = document.createElement('input');
+            input.className = 'inline-input';
+            input.value = valueEl.textContent;
+            input.setAttribute('data-field', fieldId);
+
+            // Valider avec Entrée
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') saveField(fieldId);
+                if (e.key === 'Escape') cancelField(fieldId);
+            });
+
+            valueEl.replaceWith(input);
+            btn.textContent = 'Enregistrer';
+            btn.classList.add('saving');
+            input.focus();
+            input.select();
+
+            // Montrer les actions globales
+            document.getElementById('info-edit-actions').style.display = 'flex';
+        } else {
+            saveField(fieldId);
+        }
+    }
+
+    function saveField(fieldId) {
+        const input = document.querySelector(`input[data-field="${fieldId}"]`);
+        if (!input) return;
+
+        const newValue = input.value.trim();
+        if (!newValue) {
+            showToast('Ce champ ne peut pas être vide.', 'error');
+            input.focus();
+            return;
+        }
+
+        // Validation email
+        if (fieldId === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newValue)) {
+            showToast('Adresse email invalide.', 'error');
+            input.focus();
+            return;
+        }
+
+        // Validation téléphone
+        if (fieldId === 'phone' && !/^[\d\s\+\-\(\)]{8,}$/.test(newValue)) {
+            showToast('Numéro de téléphone invalide.', 'error');
+            input.focus();
+            return;
+        }
+
+        const span = document.createElement('span');
+        span.className = 'info-value';
+        span.id = 'field-' + fieldId;
+        span.textContent = newValue;
+        input.replaceWith(span);
+
+        const btn = span.closest('.info-value-wrap').querySelector('.btn-field-edit');
+        btn.textContent = 'Modifier';
+        btn.classList.remove('saving');
+
+        // Mettre à jour le nom affiché dans le header si c'est le nom
+        if (fieldId === 'fullname') {
+            document.getElementById('display-name').textContent = newValue;
+        }
+
+        showToast(`Champ mis à jour avec succès !`, 'success');
+        checkIfAllSaved();
+    }
+    function cancelField(fieldId) {
+        const input = document.querySelector(`input[data-field="${fieldId}"]`);
+        if (!input) return;
+
+        const original = originalValues[fieldId] || '';
+        const span = document.createElement('span');
+        span.className = 'info-value';
+        span.id = 'field-' + fieldId;
+        span.textContent = original;
+        input.replaceWith(span);
+
+        const btn = span.closest('.info-value-wrap').querySelector('.btn-field-edit');
+        btn.textContent = 'Modifier';
+        btn.classList.remove('saving');
+        checkIfAllSaved();
+    }
+
+    function saveAllFields() {
+        // Enregistrer tous les champs en cours d'édition
+        document.querySelectorAll('input.inline-input').forEach(input => {
+            const fieldId = input.getAttribute('data-field');
+            if (fieldId) saveField(fieldId);
+        });
+        showToast('Tous les changements ont été enregistrés !', 'success');
+        document.getElementById('info-edit-actions').style.display = 'none';
+    }
+
+    function discardAllFields() {
+        // Annuler tous les changements
+        document.querySelectorAll('input.inline-input').forEach(input => {
+            const fieldId = input.getAttribute('data-field');
+            if (fieldId) cancelField(fieldId);
+        });
+        document.getElementById('info-edit-actions').style.display = 'none';
+        showToast('Modifications annulées.', 'info');
+    }
+
+    function checkIfAllSaved() {
+        const pendingInputs = document.querySelectorAll('input.inline-input');
+        if (pendingInputs.length === 0) {
+            document.getElementById('info-edit-actions').style.display = 'none';
+        }
+    }
+
+    // Bouton "Modifier le profil" global dans le header
+    function toggleEditMode() {
+        const btn = document.getElementById('edit-btn-text');
+        const allEditBtns = document.querySelectorAll('.btn-field-edit');
+        if (btn.textContent === 'Modifier le profil') {
+            btn.textContent = 'Terminer';
+            allEditBtns.forEach(b => b.style.display = 'inline-flex');
+            showToast('Mode édition activé.', 'info');
+        } else {
+            btn.textContent = 'Modifier le profil';
+            // Sauvegarder tous les champs ouverts
+            saveAllFields();
+            allEditBtns.forEach(b => b.style.display = 'none');
+        }
+    }
+
+
+    /* =========================================================
+       8. INFORMATIONS PRIVÉES — afficher/masquer
+       ========================================================= */
+    let privateVisible = false;
+
+    function togglePrivateInfo() {
+        privateVisible = !privateVisible;
+        const btn = document.getElementById('toggle-private-btn');
+        const cinEl = document.getElementById('cin-value');
+        const addrEl = document.getElementById('address-value');
+
+        if (privateVisible) {
+            cinEl.textContent = cinEl.dataset.real;
+            addrEl.textContent = addrEl.dataset.real;
+            btn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+                Masquer
+            `;
+            showToast('Informations privées affichées.', 'warning');
+        } else {
+            cinEl.textContent = '••••••08';
+            addrEl.textContent = 'Tunis, Tunisia';
+            btn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                Afficher
+            `;
+        }
+    }
+
+
+    /* =========================================================
+       9. PRÉFÉRENCES — toggle
+       ========================================================= */
+    function togglePreference(btnId, valueA, valueB) {
+        const btn = document.getElementById(btnId);
+        const infoItem = btn.closest('.info-item');
+        const valueEl = infoItem.querySelector('.info-value');
+
+        if (valueEl.textContent === valueA) {
+            valueEl.textContent = valueB;
+        } else {
+            valueEl.textContent = valueA;
+        }
+        showToast('Préférence mise à jour.', 'success');
+    }
+
+
+    /* =========================================================
+       10. COMPLETION BAR — progression du profil
+       ========================================================= */
+    function updateCompletionBar() {
+        const bar = document.getElementById('completion-bar');
+        const pct = document.getElementById('completion-pct');
+        let completion = 85;
+
+        // Vérifier si avatar est chargé
+        const avatar = document.getElementById('profile-avatar');
+        if (avatar.style.backgroundImage) completion = Math.min(completion + 10, 100);
+
+        bar.style.width = completion + '%';
+        pct.textContent = completion + '%';
+
+        if (completion === 100) {
+            showToast('Profil 100% complété ! 🎉', 'success');
+        }
+    }
+
+
+    /* =========================================================
+       11. RIDES — actions sur les trajets proposés
+       ========================================================= */
+    function editRide(rideId) {
+    const card = document.getElementById(rideId);
+    if (!card) return;
+
+    // Don't open twice
+    if (card.querySelector('.edit-ride-form')) {
+        card.querySelector('.edit-ride-form').remove();
+        return;
+    }
+
+    const form = document.createElement('div');
+    form.className = 'edit-ride-form';
+    form.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08);display:grid;gap:12px';
+    form.innerHTML = `
+        <p style="font-weight:500;font-size:14px;margin:0">Edit Ride</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">From</label>
+                <input class="inline-input" id="edit-from-${rideId}" value="Tunis" style="width:100%">
+            </div>
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">To</label>
+                <input class="inline-input" id="edit-to-${rideId}" value="Sousse" style="width:100%">
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">Departure time</label>
+                <input class="inline-input" type="time" id="edit-time-${rideId}" value="14:30" style="width:100%">
+            </div>
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">Price (TND/person)</label>
+                <input class="inline-input" type="number" id="edit-price-${rideId}" value="15" min="1" style="width:100%">
+            </div>
+        </div>
+        <div>
+            <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">Available seats</label>
+            <select class="inline-input" id="edit-seats-${rideId}" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px">
+                <option>1</option><option>2</option><option selected>3</option><option>4</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">Note for passengers (optional)</label>
+            <textarea class="inline-input" id="edit-note-${rideId}" rows="2" placeholder="Ex: Stop possible at Hammamet..." style="width:100%;resize:vertical"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn-discard" onclick="cancelEditRide('${rideId}')">Cancel</button>
+            <button class="btn-save" onclick="saveRide('${rideId}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Save changes
+            </button>
+        </div>
+    `;
+    card.querySelector('.ride-actions').before(form);
+}
+
+function cancelEditRide(rideId) {
+    const form = document.getElementById(rideId)?.querySelector('.edit-ride-form');
+    if (form) form.remove();
+}
+
+function saveRide(rideId) {
+    const card = document.getElementById(rideId);
+    const from = document.getElementById('edit-from-' + rideId)?.value.trim();
+    const to = document.getElementById('edit-to-' + rideId)?.value.trim();
+    const time = document.getElementById('edit-time-' + rideId)?.value;
+    const price = document.getElementById('edit-price-' + rideId)?.value;
+    const seats = document.getElementById('edit-seats-' + rideId)?.value;
+
+    if (!from || !to || !price) {
+        showToast('Please fill in all required fields.', 'error');
+        return;
+    }
+
+    // Update displayed values in the card
+    const locations = card.querySelectorAll('.ride-location h4');
+    if (locations[0]) locations[0].textContent = from;
+    if (locations[1]) locations[1].textContent = to;
+
+    const departurePara = card.querySelectorAll('.ride-location p');
+    if (departurePara[0] && time) departurePara[0].textContent = 'Today, ' + time;
+
+    const seatsEl = card.querySelector('.meta-item:first-child');
+    if (seatsEl) seatsEl.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        ${seats} seats available
+    `;
+
+    const priceEl = card.querySelectorAll('.meta-item')[1];
+    if (priceEl) priceEl.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        ${price} TND / person
+    `;
+
+    card.querySelector('.edit-ride-form').remove();
+    showToast('Ride updated successfully!', 'success');
+}
+
+function viewBookings(rideId) {
+    const card = document.getElementById(rideId);
+    if (!card) return;
+
+    // Toggle: close if already open
+    const existing = card.querySelector('.bookings-panel');
+    if (existing) { existing.remove(); return; }
+
+    const panel = document.createElement('div');
+    panel.className = 'bookings-panel';
+    panel.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.08)';
+    panel.innerHTML = `
+        <p style="font-weight:500;font-size:14px;margin:0 0 12px">Booking Requests</p>
+        <div class="bookings-panel-list">
+            ${renderBookingRow('bp1', 'K', 'Karim Jebali', '4.2', 'pending')}
+            ${renderBookingRow('bp2', 'L', 'Leila Feki', '5.0', 'pending')}
+            ${renderBookingRow('bp3', 'R', 'Rania Ben Salah', '4.7', 'confirmed')}
+        </div>
+        <p id="no-bp-msg" style="display:none;font-size:13px;color:#999;margin-top:8px">No pending requests.</p>
+    `;
+    card.appendChild(panel);
+}
+
+function renderBookingRow(id, initial, name, rating, status) {
+    const badgeColor = status === 'confirmed' ? '#16a34a' : '#d97706';
+    const badgeBg = status === 'confirmed' ? '#dcfce7' : '#fef3c7';
+    const badgeText = status === 'confirmed' ? 'Confirmed' : 'Pending';
+    const actionBtns = status === 'pending'
+        ? `<button class="btn-save" style="padding:5px 12px;font-size:12px" onclick="acceptBP('${id}')">Accept</button>
+           <button class="btn-discard" style="padding:5px 12px;font-size:12px;color:#dc2626" onclick="rejectBP('${id}')">Reject</button>`
+        : `<button class="btn-discard" style="padding:5px 12px;font-size:12px;color:#dc2626" onclick="rejectBP('${id}')">Cancel</button>`;
+
+    return `
+        <div id="${id}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06)">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:34px;height:34px;border-radius:50%;background:#e0f2fe;color:#0369a1;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:13px">${initial}</div>
+                <div>
+                    <div style="font-size:13px;font-weight:500">${name}</div>
+                    <div style="font-size:11px;color:#888">★ ${rating} · 1 seat</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                <span id="${id}-badge" style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500;background:${badgeBg};color:${badgeColor}">${badgeText}</span>
+                <div id="${id}-actions" style="display:flex;gap:6px">${actionBtns}</div>
+            </div>
+        </div>
+    `;
+}
+
+function acceptBP(id) {
+    const badge = document.getElementById(id + '-badge');
+    const actions = document.getElementById(id + '-actions');
+    badge.style.background = '#dcfce7';
+    badge.style.color = '#16a34a';
+    badge.textContent = 'Confirmed';
+    actions.innerHTML = `<button class="btn-discard" style="padding:5px 12px;font-size:12px;color:#dc2626" onclick="rejectBP('${id}')">Cancel</button>`;
+    showToast('Booking accepted!', 'success');
+}
+
+function rejectBP(id) {
+    const row = document.getElementById(id);
+    if (!row) return;
+    row.style.transition = 'opacity 0.3s';
+    row.style.opacity = '0';
+    setTimeout(() => { row.remove(); showToast('Booking rejected.', 'info'); }, 300);
+}
+
+    function cancelRide(rideId) {
+        openModal(
+            'Annuler le trajet',
+            'Voulez-vous vraiment annuler ce trajet ? Les passagers déjà confirmés seront notifiés automatiquement.',
+            'Oui, annuler',
+            () => {
+                const card = document.getElementById(rideId);
+                if (!card) return;
+
+                // Animation de suppression
+                card.style.transition = 'opacity 0.4s, transform 0.4s';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    card.remove();
+                    showToast('Trajet annulé. Les passagers ont été notifiés.', 'success');
+                    updateStatOffers();
+                }, 400);
+            },
+            true
+        );
+    }
+
+    function updateStatOffers() {
+        const current = parseInt(document.getElementById('stat-offers').textContent) || 0;
+        if (current > 0) {
+            document.getElementById('stat-offers').textContent = current - 1;
+        }
+    }
+
+
+    /* =========================================================
+       12. BOOKINGS — filtre et actions
+       ========================================================= */
+    function filterBookings(status, btn) {
+        // Mettre à jour les boutons de filtre
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const bookings = document.querySelectorAll('#bookings-list .ride-card');
+        let visible = 0;
+
+        bookings.forEach(card => {
+            const cardStatus = card.dataset.status;
+            const show = status === 'all' || cardStatus === status;
+            card.style.display = show ? 'block' : 'none';
+            if (show) visible++;
+        });
+
+        document.getElementById('no-bookings-msg').style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    function cancelBooking(bookingId) {
+        openModal(
+            'Annuler la réservation',
+            'Voulez-vous vraiment annuler cette réservation ? Cette action est irréversible.',
+            'Oui, annuler',
+            () => {
+                const card = document.getElementById(bookingId);
+                if (!card) return;
+
+                // Changer le statut visuellement
+                card.dataset.status = 'cancelled';
+                const badge = card.querySelector('.condition-badge');
+                badge.className = 'condition-badge badge-cancelled';
+                badge.textContent = 'Annulé';
+
+                // Désactiver les boutons d'action
+                card.querySelectorAll('.ride-actions button').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = '0.4';
+                    b.style.cursor = 'not-allowed';
+                });
+
+                showToast('Réservation annulée avec succès.', 'info');
+            },
+            true
+        );
+    }
+
+   function messageDriver(driverName) {
+    // Remove any existing chat modal
+    const existing = document.getElementById('chat-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'chat-modal';
+    modal.style.cssText = `
+        position:fixed;bottom:24px;right:24px;width:320px;
+        background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);
+        border:1px solid rgba(0,0,0,0.08);z-index:9999;font-family:inherit;overflow:hidden
+    `;
+    modal.innerHTML = `
+        <div style="background:#1a1a1a;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:30px;height:30px;border-radius:50%;background:#374151;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500">
+                    ${driverName.charAt(0)}
+                </div>
+                <div>
+                    <div style="font-size:13px;font-weight:500">${driverName}</div>
+                    <div style="font-size:11px;color:#aaa">Driver</div>
+                </div>
+            </div>
+            <button onclick="document.getElementById('chat-modal').remove()" style="background:none;border:none;color:#aaa;font-size:18px;cursor:pointer;line-height:1">×</button>
+        </div>
+        <div id="chat-messages" style="height:200px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#f9fafb">
+            <div style="align-self:flex-start;background:#fff;border:1px solid #e5e7eb;border-radius:12px 12px 12px 4px;padding:8px 12px;font-size:13px;max-width:80%">
+                Hi! Looking forward to the trip 👋
+            </div>
+        </div>
+        <div style="padding:10px;border-top:1px solid #f0f0f0;display:flex;gap:8px;background:#fff">
+            <input
+                id="chat-msg-input"
+                type="text"
+                placeholder="Type a message..."
+                style="flex:1;padding:8px 12px;border:1px solid #e5e7eb;border-radius:20px;font-size:13px;outline:none"
+                onkeydown="if(event.key==='Enter') sendChatMsg('${driverName}')"
+            >
+            <button
+                onclick="sendChatMsg('${driverName}')"
+                style="background:#1a1a1a;color:#fff;border:none;border-radius:20px;padding:8px 14px;font-size:13px;cursor:pointer"
+            >Send</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('chat-msg-input').focus();
+}
+
+function sendChatMsg(driverName) {
+    const input = document.getElementById('chat-msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const messages = document.getElementById('chat-messages');
+
+    // My message (right side)
+    const myMsg = document.createElement('div');
+    myMsg.style.cssText = 'align-self:flex-end;background:#1a1a1a;color:#fff;border-radius:12px 12px 4px 12px;padding:8px 12px;font-size:13px;max-width:80%';
+    myMsg.textContent = text;
+    messages.appendChild(myMsg);
+    input.value = '';
+    messages.scrollTop = messages.scrollHeight;
+
+    // Simulate a reply after 1.2s
+    setTimeout(() => {
+        const replies = [
+            'Got it, thanks!',
+            'Sure, no problem.',
+            'See you then!',
+            'Understood, I\'ll be there.'
+        ];
+        const reply = document.createElement('div');
+        reply.style.cssText = 'align-self:flex-start;background:#fff;border:1px solid #e5e7eb;border-radius:12px 12px 12px 4px;padding:8px 12px;font-size:13px;max-width:80%';
+        reply.textContent = replies[Math.floor(Math.random() * replies.length)];
+        messages.appendChild(reply);
+        messages.scrollTop = messages.scrollHeight;
+    }, 1200);
+}
+
+
+    /* =========================================================
+       13. REVIEWS — recherche / filtre
+       ========================================================= */
+    function filterReviews(query) {
+        const q = query.toLowerCase().trim();
+        const reviews = document.querySelectorAll('#reviews-list .review-item');
+        let found = 0;
+
+        reviews.forEach(review => {
+            const keywords = review.dataset.keywords || '';
+            const text = review.querySelector('.review-text').textContent.toLowerCase();
+            const author = review.querySelector('.review-author').textContent.toLowerCase();
+            const matches = !q || text.includes(q) || keywords.includes(q) || author.includes(q);
+
+            review.style.display = matches ? '' : 'none';
+            if (matches) found++;
+        });
+
+        document.getElementById('no-reviews-msg').style.display = found === 0 ? 'block' : 'none';
+    }
+
+    // Effacer la recherche avec Escape
+    document.addEventListener('keydown', e => {
+        const searchInput = document.getElementById('reviews-search-input');
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+            searchInput.value = '';
+            filterReviews('');
+        }
+    });
+
+
+    /* =========================================================
+       14. REVIEWS — bouton "Utile"
+       ========================================================= */
+    function markHelpful(btn) {
+        if (btn.classList.contains('voted')) {
+            showToast('Vous avez déjà voté pour cet avis.', 'warning');
+            return;
+        }
+        btn.classList.add('voted');
+        const current = parseInt(btn.textContent.match(/\d+/)?.[0]) || 0;
+        btn.textContent = `👍 Utile (${current + 1})`;
+        showToast('Merci pour votre retour !', 'success');
+    }
+
+
+    /* =========================================================
+       15. REVIEWS — système de notation interactive
+       ========================================================= */
+    let currentReviewRating = 0;
+    const ratingLabels = ['', 'Très mauvais 😞', 'Mauvais 😕', 'Moyen 😐', 'Bien 😊', 'Excellent 🤩'];
+
+    /*function setReviewRating(value) {
+        currentReviewRating = value;
+        updateStarDisplay(value);
+        document.getElementById('rating-hint').textContent = ratingLabels[value];
+        checkReviewReady();
+    }*/
+
+    function hoverReviewRating(value) {
+        updateStarDisplay(value);
+    }
+
+    function resetReviewRating() {
+        updateStarDisplay(currentReviewRating);
+    }
+
+    function updateStarDisplay(value) {
+        document.querySelectorAll('.star-btn').forEach(star => {
+            const starVal = parseInt(star.dataset.value);
+            star.classList.toggle('active', starVal <= value);
+        });
+    }
+
+    function onReviewInput() {
+        const textarea = document.getElementById('review-textarea');
+        const counter = document.getElementById('char-counter');
+        const len = textarea.value.length;
+        counter.textContent = `${len} / 300`;
+        counter.classList.toggle('warn', len > 250);
+        checkReviewReady();
+    }
+
+    /*function checkReviewReady() {
+        const text = document.getElementById('review-textarea').value.trim();
+        const btn = document.getElementById('submit-review-btn');
+        btn.disabled = !(currentReviewRating > 0 && text.length >= 10);
+    }*/
+   function setReviewRating(value) {
+    currentReviewRating = value;
+    updateStarDisplay(value);
+    const labels = ['', 'Très mauvais 😞', 'Mauvais 😕', 'Moyen 😐', 'Bien 😊', 'Excellent 🤩'];
+    document.getElementById('rating-hint').textContent = labels[value];
+    checkReviewReady();
+}
+
+function checkReviewReady() {
+    const text = document.getElementById('review-textarea').value.trim();
+    const btn = document.getElementById('submit-review-btn');
+    const ready = currentReviewRating > 0 && text.length >= 10;
+    btn.disabled = !ready;
+    // Force visual update — sometimes the browser caches the disabled style
+    btn.style.opacity = ready ? '1' : '0.5';
+    btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+}
+
+
+function submitReview() {
+    const btn = document.getElementById('submit-review-btn');
+    const text = document.getElementById('review-textarea').value.trim();
+    const rating = currentReviewRating;
+
+    if (!text || rating === 0) return;
+
+    // Validation minimum
+    if (text.length < 10) {
+        showToast('Votre avis doit contenir au moins 10 caractères.', 'error');
+        return;
+    }
+
+    // Loading state
+    btn.textContent = 'Envoi en cours...';
+    btn.disabled = true;
+    btn.classList.add('loading');
+
+    // Simulate API call
+    setTimeout(() => {
+        addReviewToList(rating, text);
+
+        // Reset form
+        document.getElementById('review-textarea').value = '';
+        document.getElementById('char-counter').textContent = '0 / 300';
+        currentReviewRating = 0;
+        updateStarDisplay(0);
+        document.getElementById('rating-hint').textContent = 'Sélectionnez une note';
+
+        btn.textContent = "Soumettre l'avis";
+        btn.classList.remove('loading');
+        btn.disabled = true;
+
+        showToast('Votre avis a été soumis avec succès !', 'success');
+    }, 1500);
+}
+
+function addReviewToList(rating, text) {
+    const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const ratingNum = rating.toFixed(1);
+    const today = new Date().toLocaleDateString('fr-FR', {
+        day: 'numeric', month: 'short', year: 'numeric'
+    });
+
+    // Create element properly instead of innerHTML string
+    const reviewEl = document.createElement('div');
+    reviewEl.className = 'review-item';
+    reviewEl.dataset.keywords = text.toLowerCase();
+    reviewEl.innerHTML = `
+        <div class="review-header">
+            <div class="review-author-info">
+                <div class="review-avatar" style="background:#e0f2fe;color:#0369a1">V</div>
+                <span class="review-author">Vous</span>
+                <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#16a34a;margin-left:8px">Votre avis</span>
+            </div>
+            <span class="review-stars">${stars} ${ratingNum}</span>
+        </div>
+        <p class="review-text">"${text}"</p>
+        <div class="review-footer">
+            <div class="review-meta">Aujourd'hui · ${today}</div>
+            <button class="btn-helpful" onclick="deleteMyReview(this)">🗑 Supprimer</button>
+        </div>
+    `;
+
+    // Insert at top of list
+    const list = document.getElementById('reviews-list');
+    list.prepend(reviewEl);
+
+    // Animate in
+    reviewEl.style.opacity = '0';
+    reviewEl.style.transform = 'translateY(-12px)';
+    reviewEl.style.transition = 'opacity 0.4s, transform 0.4s';
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            reviewEl.style.opacity = '1';
+            reviewEl.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Update rating count in the summary
+    const countEl = document.querySelector('.rating-count');
+    if (countEl) {
+        const current = parseInt(countEl.textContent) || 127;
+        countEl.textContent = (current + 1) + ' avis';
+    }
+
+    // Scroll to the new review
+    reviewEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function deleteMyReview(btn) {
+    const reviewEl = btn.closest('.review-item');
+    openModal(
+        'Supprimer l\'avis',
+        'Voulez-vous vraiment supprimer votre avis ?',
+        'Oui, supprimer',
+        () => {
+            reviewEl.style.transition = 'opacity 0.3s, transform 0.3s';
+            reviewEl.style.opacity = '0';
+            reviewEl.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                reviewEl.remove();
+                showToast('Avis supprimé.', 'info');
+                // Update count
+                const countEl = document.querySelector('.rating-count');
+                if (countEl) {
+                    const current = parseInt(countEl.textContent) || 128;
+                    countEl.textContent = (current - 1) + ' avis';
+                }
+            }, 300);
+        },
+        true
+    );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* =========================================================
+       16. PAGE LOAD — initialisation
+       ========================================================= */
+    document.addEventListener('DOMContentLoaded', () => {
+        // Masquer les boutons d'édition par défaut
+        document.querySelectorAll('.btn-field-edit').forEach(btn => {
+            btn.style.display = 'none';
+        });
+    });
+
+    </script>
+
+</body>
+</html>

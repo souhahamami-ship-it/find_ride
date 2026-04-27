@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RideShare | Information</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="info.css">
+    <style>
+        /* JS Features Styles */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            background:linear-gradient(135deg, #6366f1, #8b5cf6);
+            width : 0%;
+            z-index: 9999;
+            transition: width 0.1s linear;
+        }
+
+        
+
+        .back-to-top {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px; height: 44px;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.2s;
+            z-index: 999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .back-to-top:hover { transform: scale(1.1); }
+
+        .toast {
+            position: fixed;
+            bottom: 80px; right: 24px;
+            background: #0F6E56;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 9998;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" title="Back to top">&#8679;</button>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>RideShare Information Center</h1>
+        <p class="textpageheader">Learn more about our mission, policies, and services</p>
+
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- ABOUT -->
+    <section id="about" class="info-section" data-keywords="about mission vision values platform tunisia">
+        <h2>About Us </h2>
+        <div class="section-body">
+            <p>
+                RideShare is a digital ride-sharing platform developed to connect travelers across Tunisia.
+                Our mission is to provide affordable, safe, and eco-friendly transportation options
+                while reducing traffic congestion and carbon emissions.
+            </p>
+            <h3>Our Vision</h3>
+            <p>
+                We aim to become Tunisia's leading carpooling platform by promoting sustainable travel
+                and community-based mobility solutions.
+            </p>
+            <h3>Our Values</h3>
+            <ul>
+                <li>Safety First</li>
+                <li>Community Trust</li>
+                <li>Environmental Responsibility</li>
+                <li>Affordable Mobility</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SAFETY -->
+    <section id="safety" class="info-section" data-keywords="safety verification rating profile driver passenger secure">
+        <h2>Safety </h2>
+        <div class="section-body">
+            <p>
+                Your safety is our top priority. RideShare implements several measures to ensure secure travel experiences:
+            </p>
+            <ul>
+                <li>Verified user registration</li>
+                <li>Driver and passenger rating system</li>
+                <li>Profile identity validation</li>
+                <li>Secure communication within the platform</li>
+            </ul>
+            <p>
+                We strongly encourage users to review profiles and ratings before confirming a ride.
+            </p>
+        </div>
+    </section>
+
+    <!-- SUPPORT -->
+    <section id="support" class="info-section" data-keywords="support help email phone dashboard booking account">
+        <h2>Support </h2>
+        <div class="section-body">
+            <p>
+                Our support team is available to assist you with booking issues, account management,
+                or general questions regarding our platform.
+            </p>
+            <h3>How to Get Help</h3>
+            <ul>
+                <li>Email us at: help@rideshare.tn</li>
+                <li>Call our support line: +216 XX XXX XXX</li>
+                <li>Submit a request through your user dashboard</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- TERMS -->
+    <section id="terms" class="info-section" data-keywords="terms service conditions laws transport legal">
+        <h2>Terms of Service </h2>
+        <div class="section-body">
+            <p>By using RideShare, you agree to:</p>
+            <ol>
+                <li>Provide accurate personal information.</li>
+                <li>Respect other users and drivers.</li>
+                <li>Comply with Tunisian transportation laws.</li>
+                <li>Avoid unsafe or illegal activities.</li>
+            </ol>
+            <p>
+                For full terms and conditions, please refer to our official Terms of Service document.
+            </p>
+        </div>
+    </section>
+
+    <!-- PRIVACY -->
+    <section id="privacy" class="info-section" data-keywords="privacy data personal information secure storage third party">
+        <h2>Privacy Policy </h2>
+        <div class="section-body">
+            <p>
+                RideShare values your privacy. We collect only necessary information to provide our services,
+                including name, email address, and ride details.
+            </p>
+            <p>
+                We do not sell or share your personal data with third parties.
+                All data is securely stored and protected.
+            </p>
+        </div>
+    </section>
+
+    <!-- COOKIES -->
+    <section id="cookies" class="info-section" data-keywords="cookies browser preferences performance traffic">
+        <h2>Cookie Policy</h2>
+        <div class="section-body">
+            <p>
+                Our website uses cookies to improve user experience and analyze website traffic.
+                Cookies help us remember your preferences and optimize performance.
+            </p>
+            <p>
+                You can disable cookies in your browser settings at any time.
+            </p>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="info-section" data-keywords="contact questions suggestions partnership tunis email phone location">
+        <h2>Contact Us </h2>
+        <div class="section-body">
+            <p>
+                We would love to hear from you. Whether you have questions, suggestions,
+                or partnership inquiries, feel free to contact us.
+            </p>
+            <ul>
+                <li>Email: help@rideshare.tn</li>
+                <li>Phone: +216 XX XXX XXX</li>
+                <li>Location: Tunis, Tunisia</li>
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    /* ── 1. SCROLL PROGRESS BAR ── */
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const total = document.body.scrollHeight - window.innerHeight;
+        document.getElementById('progressBar').style.width =
+            total > 0 ? (scrolled / total * 100) + '%' : '0%';
+
+        /* ── 4. BACK TO TOP BUTTON ── */
+        document.getElementById('backToTop').classList.toggle('visible', scrolled > 300);
+
+        /* ── auto-expand section when scrolled into view ── */
+        document.querySelectorAll('.info-section').forEach(sec => {
+            const rect = sec.getBoundingClientRect();
+            if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+                sec.classList.remove('collapsed');
+            }
+        });
+    });
+
+ 
+
+   
+
+    /* ── 4. BACK TO TOP ── */
+    document.getElementById('backToTop').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    
+</script>
+
+</body>
+</html>
