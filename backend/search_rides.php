@@ -10,7 +10,7 @@ $maxPrice = $_GET['maxPrice'] ?? "";
 $condition = $_GET['condition'] ?? "";
 $vehicle = $_GET['vehicle'] ?? "";
 
-$sql = "SELECT rides.*, users.first_name, users.last_name 
+$sql = "SELECT rides.*, users.first_name, users.last_name, users.id AS user_id
         FROM rides 
         JOIN users ON rides.user_id = users.id 
         WHERE 1=1";

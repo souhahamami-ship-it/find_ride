@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,30 +11,27 @@
 <body>
 
 <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
-                    <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span>RideShare</span>
-            </div>
-            <div class="nav-links">
-                <a href="home.html" >Home</a>
-                <a href="profile.html" >Profile</a>
-                <a href="find_ride.html" >Find Rides</a>
-                <a href="offer_ride.html" >Offer Ride</a>
-                <a href="login.html" >Login</a>
-                <a href="register.html"  >Sign Up</a> 
-            </div>
-        </div>
-    </nav>
 
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <span>RideShare</span>
+        </div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="find_ride.html">Find Rides</a>
+            <a href="offer_ride.html">Offer Ride</a>
+            <a href="login.html">Login</a>
+            <a href="register.html">Sign Up</a> 
+        </div>
+    </div>
+</nav>
 
 <br><br><br>
 
 <!-- HEADER -->
+
 <section class="page-header">
     <div class="container">
         <h1>Find Your Perfect Ride</h1>
@@ -42,6 +40,7 @@
 </section>
 
 <!-- SEARCH FILTERS -->
+
 <section class="search-section">
 <div class="container">
 
@@ -50,12 +49,14 @@
 
 <div class="filter-group">
 <label>From</label>
-<input type="text" id="from" placeholder="Departure city">
+<input type="text" id="from" list="cities-from" placeholder="Departure city">
+<datalist id="cities-from"></datalist>
 </div>
 
 <div class="filter-group">
 <label>To</label>
-<input type="text" id="to" placeholder="Arrival city">
+<input type="text" id="to" list="cities-to" placeholder="Arrival city">
+<datalist id="cities-to"></datalist>
 </div>
 
 <div class="filter-group">
@@ -70,7 +71,13 @@
 <option>1</option>
 <option>2</option>
 <option>3</option>
-<option>4+</option>
+<option >4</option>
+<option >5</option>
+<option >6</option>
+<option >7</option>
+<option >8</option>
+<option >9+</option>
+
 </select>
 </div>
 
@@ -100,21 +107,25 @@
 <option>Mini Bus</option>
 </select>
 </div>
-<div style="margin-top:20px;"> <button onclick="searchRides()" class="btn-primary">Search</button></div>
 
+<div style="margin-top:20px;">
+<button onclick="searchRides()" class="btn-primary">Search</button>
 </div>
 
-
-
+</div>
 </div>
 
 <!-- RESULTS -->
+
 <div class="rides-list" id="rides-container"></div>
 
 </div>
 </section>
 
-<!-- FOOTER -->
+<!-- TOAST -->
+
+<div id="toast" class="toast"></div>
+
  <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -149,6 +160,7 @@
     </footer>
 
 <!-- SCRIPT -->
+
 <script>
 
 // NAVBAR EFFECT
@@ -157,48 +169,43 @@ window.addEventListener("scroll", () => {
     navbar.classList.toggle("scrolled", window.scrollY > 50);
 });
 
-// LOAD DEFAULT (from home)
-window.addEventListener("load", () => {
+// CITY LIST
+const tunisianCities = [
+  "Tunis","Sfax","Sousse","Gabes","Bizerte","Nabeul","Kairouan","Gafsa",
+  "Monastir","Ariana","Ben Arous","Manouba","Mahdia","Kasserine","Kebili",
+  "Tozeur","Tataouine","Siliana","Zaghouan","Jendouba","Beja","Kef",
+  "Medenine","Sidi Bouzid"
+];
 
-    let fromStorage = localStorage.getItem("search_from");
-    let toStorage = localStorage.getItem("search_to");
-    let dateStorage = localStorage.getItem("search_date");
-
-    // فقط إذا جا من home
-    if (fromStorage || toStorage || dateStorage) {
-        document.getElementById("from").value = fromStorage || "";
-        document.getElementById("to").value = toStorage || "";
-        document.getElementById("date").value = dateStorage || "";
-
-        // OPTIONAL: امسحهم بعد الاستعمال
-        localStorage.removeItem("search_from");
-        localStorage.removeItem("search_to");
-        localStorage.removeItem("search_date");
-    }
-
+['cities-from','cities-to'].forEach(id => {
+  const dl = document.getElementById(id);
+  tunisianCities.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c;
+    dl.appendChild(o);
+  });
 });
 
-// SEARCH FUNCTION
+// TOAST
+function showToast(msg, duration = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// SEARCH
 async function searchRides() {
 
     let from = document.getElementById("from").value.trim();
     let to = document.getElementById("to").value.trim();
     let date = document.getElementById("date").value;
-    let seats = document.getElementById("seats").value;
-    let maxPrice = document.getElementById("max-price").value;
-    let condition = document.getElementById("condition").value;
-    let vehicle = document.getElementById("v").value;
 
-    // build URL only with filled fields
     let params = new URLSearchParams();
 
     if (from) params.append("departure", from);
     if (to) params.append("destination", to);
     if (date) params.append("date", date);
-    if (seats && seats !== "Any") params.append("seats", seats);
-    if (maxPrice) params.append("maxPrice", maxPrice);
-    if (condition && condition !== "Any") params.append("condition", condition);
-    if (vehicle && vehicle !== "Any") params.append("vehicle", vehicle);
 
     let url = `http://localhost/find_ride/backend/search_rides.php?${params.toString()}`;
 
@@ -206,92 +213,72 @@ async function searchRides() {
         const res = await fetch(url);
         const text = await res.text();
 
-        console.log("RAW RIDES:", text);
-
         let rides;
         try {
             rides = JSON.parse(text);
         } catch {
-            alert("Invalid JSON from server ❌");
+            alert("Invalid JSON ❌");
             return;
         }
 
         let container = document.getElementById("rides-container");
         container.innerHTML = "";
 
-     if (!rides || rides.length === 0) {
-    container.innerHTML = `
-    <h2 style="text-align:center; margin-top:40px;">
-        No rides found 
-    </h2>
-`;;
-    return;
-}
+        if (!rides || rides.length === 0) {
+            container.innerHTML = `<h2 style="text-align:center;">No rides found</h2>`;
+            return;
+        }
 
         rides.forEach(ride => {
 
-            // parse conditions (JSON → text)
-            let conditionsText = "None";
-            try {
-                let cond = JSON.parse(ride.conditions);
-                conditionsText = Object.keys(cond)
-                    .filter(k => cond[k])
-                    .join(", ");
-            } catch {}
-
-            container.innerHTML += `
+container.innerHTML += `
 <div class="ride-card">
 
-    <div class="ride-header">
-        <div class="ride-driver">
-            <div class="driver-avatar">
-                ${ride.first_name[0]}
-            </div>
-            <div class="driver-info">
-                <h3>${ride.first_name} ${ride.last_name}</h3>
-                <div class="driver-rating">⭐ 4.8</div>
-            </div>
-        </div>
+<div class="ride-header">
+<div class="ride-driver">
+<div class="driver-avatar">${ride.first_name[0]}</div>
+<div class="driver-info">
+<h3>${ride.first_name} ${ride.last_name}</h3>
+<div class="driver-rating">⭐ 4.8</div>
+</div>
+</div>
 
-        <div class="ride-price">
-            <div class="price-amount">${ride.price ?? "-"}</div>
-            <div class="price-label">TND</div>
-        </div>
-    </div>
+<div class="ride-price">
+<div class="price-amount">${ride.price ?? "-"}</div>
+<div class="price-label">TND</div>
+</div>
+</div>
 
-    <div class="ride-details">
-        <div class="ride-location">
-            <h4>${ride.departure}</h4>
-            <p>Departure</p>
-        </div>
+<div class="ride-details">
+<div class="ride-location">
+<h4>${ride.departure}</h4>
+<p>Departure</p>
+</div>
 
-        <div class="ride-arrow"></div>
+<div class="ride-arrow"></div>
 
-        <div class="ride-location">
-            <h4>${ride.destination}</h4>
-            <p>Arrival</p>
-        </div>
-    </div>
+<div class="ride-location">
+<h4>${ride.destination}</h4>
+<p>Arrival</p>
+</div>
+</div>
 
-    <div class="ride-meta">
-        <div class="meta-item">📅 ${ride.date}</div>
-        <div class="meta-item">⏰ ${ride.time || "-"}</div>
-        <div class="meta-item">💺 ${ride.seats} seats</div>
-        <div class="meta-item">🚗 ${ride.vehicle ?? "-"}</div>
-    </div>
+<div class="ride-meta">
+<div class="meta-item">📅 ${ride.date}</div>
+<div class="meta-item">💺 ${ride.seats} seats</div>
+</div>
 
-    <div class="ride-conditions">
-        ${conditionsText
-            .split(",")
-            .map(c => `<span class="condition-badge">${c}</span>`)
-            .join("")}
-    </div>
+<div class="ride-actions">
 
-    <div class="ride-actions">
-        <button class="btn-book" onclick="bookRide(${ride.id})">
-            Accept Ride ✅
-        </button>
-    </div>
+<button class="btn-book" onclick="bookRide(${ride.id}, this)">
+Accept Ride ✅
+</button>
+
+<button class="btn-message" onclick="openChat(${ride.user_id}, '${ride.first_name} ${ride.last_name}', ${ride.id})">
+Message 💬
+</button>
+
+</div>
 
 </div>
 `;
@@ -302,8 +289,17 @@ async function searchRides() {
         alert("Error loading rides ❌");
     }
 }
-//
-async function bookRide(rideId) {
+
+function openChat(driverId, driverName, rideId){
+
+    localStorage.setItem("chat_driver_id", driverId);
+    localStorage.setItem("chat_driver_name", driverName);
+    localStorage.setItem("chat_ride_id", rideId);
+
+    window.location.href = "profile.html#messages";
+}
+// BOOK
+async function bookRide(rideId, btn) {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -331,6 +327,10 @@ async function bookRide(rideId) {
             alert(data.error);
         } else {
             alert("Ride booked successfully 🎉");
+
+            btn.textContent = "✓ Booked!";
+            btn.style.background = "#059669";
+            btn.disabled = true;
         }
 
     } catch (err) {
@@ -338,8 +338,6 @@ async function bookRide(rideId) {
         alert("Server error ❌");
     }
 }
-// ==========================
-
 
 </script>
 

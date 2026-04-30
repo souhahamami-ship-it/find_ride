@@ -1,0 +1,37 @@
+<?php
+header("Content-Type: application/json");
+include "connect.php";
+
+// ✅ SAFE user_id
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+
+// ✅ PREPARE QUERY
+$sql = "SELECT * FROM reviews WHERE user_id = $user_id ORDER BY created_at DESC";
+
+$result = $conn->query($sql);
+
+// ❌ If query fails → return error JSON
+if(!$result){
+    echo json_encode([
+        "error" => "Query failed",
+        "details" => $conn->error
+    ]);
+    exit;
+}
+
+$data = [];
+
+// ✅ LOOP SAFELY
+while($row = $result->fetch_assoc()){
+    $data[] = [
+        "author" => $row["author"] ?? "Unknown",
+        "rating" => 5,
+        "text"   => $row["comment"] ?? "",
+        "trip"   => "",
+        "date"   => $row["created_at"] ?? ""
+    ];
+}
+
+// ✅ ALWAYS RETURN JSON
+echo json_encode($data);
+?>

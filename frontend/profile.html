@@ -1,393 +1,1659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile - RideShare</title>
-<link rel="stylesheet" href="profile.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - RideShare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="profile.css" rel="stylesheet">
+    <style>
+        /* ── Toast area ── */
+        #toast-area {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast {
+            padding: 12px 20px; border-radius: 10px; font-size: 14px;
+            display: flex; align-items: center; gap: 10px; opacity: 0;
+            transform: translateY(20px); transition: opacity .3s, transform .3s;
+            pointer-events: auto; box-shadow: 0 4px 20px rgba(0,0,0,.18);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast-success { background: #1a1a1a; color: #fff; }
+        .toast-error   { background: #dc2626; color: #fff; }
+        .toast-info    { background: #2563eb; color: #fff; }
+        .toast-warning { background: #d97706; color: #fff; }
 
+        /* ── Inline edit input ── */
+        .inline-input {
+            border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 6px 10px;
+            font-family: inherit; font-size: 14px; outline: none; transition: border .2s;
+            width: 100%; box-sizing: border-box;
+        }
+        .inline-input:focus { border-color: #1a1a1a; }
+
+        /* ── Stars input ── */
+        .stars-input-row { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+        .star-btn { font-size: 28px; cursor: pointer; color: #d1d5db; transition: color .15s; user-select: none; }
+        .star-btn.active { color: #f59e0b; }
+        .rating-hint { font-size: 13px; color: #888; margin-left: 8px; }
+
+        /* ── Review textarea ── */
+        .review-textarea-wrap { position: relative; margin-bottom: 12px; }
+        .review-textarea {
+            width: 100%; min-height: 90px; resize: vertical; border: 1.5px solid #e5e7eb;
+            border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 14px; outline: none;
+            transition: border .2s; box-sizing: border-box;
+        }
+        .review-textarea:focus { border-color: #1a1a1a; }
+        .char-counter { position: absolute; bottom: 10px; right: 12px; font-size: 11px; color: #aaa; }
+        .char-counter.warn { color: #dc2626; }
+
+        /* ── Add review section ── */
+        .add-review-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,.08); }
+        .add-review-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+        .btn-submit-review {
+            background: #1a1a1a; color: #fff; border: none; padding: 10px 22px;
+            border-radius: 8px; font-size: 14px; cursor: pointer; transition: opacity .2s;
+        }
+        .btn-submit-review:disabled { opacity: .4; cursor: not-allowed; }
+
+        /* ── Rating summary ── */
+        .rating-summary { display: flex; gap: 32px; align-items: flex-start; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,.08); margin-bottom: 20px; }
+        .rating-big { text-align: center; min-width: 80px; }
+        .rating-num { font-size: 42px; font-weight: 700; line-height: 1; display: block; }
+        .rating-stars-big { font-size: 20px; color: #f59e0b; }
+        .rating-count { font-size: 12px; color: #888; }
+        .rating-bars { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .rating-bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; }
+        .rating-bar-wrap { flex: 1; background: #f0f0f0; border-radius: 999px; height: 6px; }
+        .rating-bar-fill { height: 6px; border-radius: 999px; background: #f59e0b; }
+
+        /* ── Review items ── */
+        .reviews-list { display: flex; flex-direction: column; gap: 16px; }
+        .review-item { padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,.06); }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .review-author-info { display: flex; align-items: center; gap: 10px; }
+        .review-avatar { width: 34px; height: 34px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+        .review-author { font-weight: 500; font-size: 14px; }
+        .review-stars { color: #f59e0b; font-size: 13px; }
+        .review-text { font-size: 14px; color: #444; margin: 0 0 10px; line-height: 1.5; }
+        .review-footer { display: flex; justify-content: space-between; align-items: center; }
+        .review-meta { font-size: 12px; color: #999; }
+        .btn-helpful { background: none; border: 1px solid #e5e7eb; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; transition: background .2s; }
+        .btn-helpful:hover, .btn-helpful.voted { background: #f0f0f0; }
+
+        /* ── Reviews search ── */
+        .reviews-search { border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 7px 12px; font-size: 13px; outline: none; width: 200px; transition: border .2s; }
+        .reviews-search:focus { border-color: #1a1a1a; }
+
+        /* ── Empty state ── */
+        .empty-state { padding: 32px; text-align: center; color: #999; font-size: 14px; }
+
+        /* ── Booking badges ── */
+        .condition-badge { padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+        .badge-success  { background: #dcfce7; color: #16a34a; }
+        .badge-pending  { background: #fef3c7; color: #d97706; }
+        .badge-cancelled{ background: #fee2e2; color: #dc2626; }
+
+        /* ── Ride header ── */
+        .ride-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .ride-driver { display: flex; align-items: center; gap: 10px; }
+        .driver-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+
+        /* ── Filter group ── */
+        .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+        .filter-btn { padding: 5px 14px; border: 1.5px solid #e5e7eb; border-radius: 999px; font-size: 13px; background: none; cursor: pointer; transition: all .2s; }
+        .filter-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+        /* ── Btn field edit ── */
+        .btn-field-edit { background: none; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; display: none; }
+        .btn-field-edit:hover { background: #f5f5f5; }
+        .btn-field-edit.saving { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+        /* ── Info edit actions ── */
+        .info-edit-actions-bar { display: none; gap: 8px; align-items: center; }
+        .btn-save { background: #1a1a1a; color: #fff; border: none; padding: 7px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-discard { background: none; border: 1.5px solid #e5e7eb; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+        /* ── Verified badge ── */
+        .verified-badge { background: #dcfce7; color: #16a34a; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+        .info-value.verified { color: #16a34a; font-weight: 500; }
+
+        /* ── Card header row ── */
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+
+        /* ── Ride status bar ── */
+        .ride-status-bar { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .ride-status.active { color: #16a34a; font-weight: 600; font-size: 13px; }
+        .ride-id { font-size: 12px; color: #aaa; }
+
+        /* ── Ride actions ── */
+        .ride-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,.06); }
+        .btn-edit, .btn-message { padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+        .btn-edit { background: none; border: 1.5px solid #1a1a1a; }
+        .btn-message { background: #1a1a1a; color: #fff; border: none; }
+        .btn-danger { background: #dc2626 !important; color: #fff; border: none !important; }
+
+        /* ── Add ride btn ── */
+        .btn-add-ride { background: #1a1a1a; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+        /* ── Edit profile btn ── */
+        .btn-edit-profile { background: none; border: 1.5px solid rgba(255,255,255,.6); color: #fff; padding: 8px 18px; border-radius: 8px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background .2s; }
+        .btn-edit-profile:hover { background: rgba(255,255,255,.15); }
+
+        /* ── Info grid ── */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media(max-width:600px){ .info-grid { grid-template-columns: 1fr; } }
+        .info-item { display: flex; flex-direction: column; gap: 4px; }
+        .info-label { font-size: 12px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+        .info-value { font-size: 15px; color: #1a1a1a; }
+        .info-value-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        /* ── Rides meta ── */
+        .ride-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+        .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #555; }
+        .meta-item.pending { color: #d97706; }
+        .ride-duration { font-size: 12px; color: #888; }
+        .ride-arrow-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+        .ride-arrow { height: 2px; background: #1a1a1a; width: 80%; border-radius: 999px; position: relative; }
+        .ride-arrow::after { content:'▶'; position: absolute; right: -8px; top: -7px; font-size: 10px; }
+        .ride-details { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+        .ride-location h4 { margin: 0; font-size: 16px; }
+        .ride-location p { margin: 2px 0 0; font-size: 12px; color: #888; }
+        .ride-card { background: #fafafa; border: 1px solid #f0f0f0; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+
+        /* ── Avatar wrapper ── */
+        .avatar-wrapper { position: relative; cursor: pointer; width: fit-content; }
+        .avatar-upload-overlay {
+            position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,.5);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 3px; opacity: 0; transition: opacity .2s; color: #fff; font-size: 11px;
+        }
+        .avatar-wrapper:hover .avatar-upload-overlay { opacity: 1; }
+
+        /* ── Btn toggle pref ── */
+        .btn-toggle-pref { background: none; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+
+        /* ══════════════════════════════════════════
+           MESSAGES TAB
+        ══════════════════════════════════════════ */
+        .messages-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 560px;
+            background: #fff;
+        }
+        @media(max-width:640px){
+            .messages-layout { grid-template-columns: 1fr; height: auto; }
+            .conversations-panel { border-right: none; border-bottom: 1px solid #e5e7eb; height: 220px; }
+            .chat-panel { height: 380px; }
+        }
+
+        .conversations-panel {
+            border-right: 1px solid #e5e7eb;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        .conversations-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600; font-size: 15px;
+            background: #fafafa;
+        }
+        .conversations-list { flex: 1; overflow-y: auto; }
+        .conv-item {
+            padding: 14px 18px;
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: background .15s;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .conv-item:hover, .conv-item.active { background: #f0f0f0; }
+        .conv-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: #1a1a1a; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 15px; flex-shrink: 0;
+        }
+        .conv-info { flex: 1; min-width: 0; }
+        .conv-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .conv-preview { font-size: 12px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .conv-time { font-size: 11px; color: #bbb; flex-shrink: 0; }
+        .conv-unread {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #1a1a1a; color: #fff;
+            font-size: 10px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .conv-empty { padding: 32px 18px; text-align: center; color: #bbb; font-size: 13px; }
+
+        .chat-panel { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .chat-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; align-items: center; gap: 12px;
+            background: #fafafa; flex-shrink: 0;
+        }
+        .chat-header-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: #1a1a1a; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 14px;
+        }
+        .chat-header-info { flex: 1; }
+        .chat-header-name { font-size: 15px; font-weight: 600; }
+        .chat-header-sub { font-size: 12px; color: #888; }
+        .chat-placeholder {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 10px; color: #bbb; font-size: 14px;
+        }
+        .chat-messages {
+            flex: 1; overflow-y: auto; padding: 16px 18px;
+            display: flex; flex-direction: column; gap: 10px;
+            background: #f9fafb;
+        }
+        .chat-msg {
+            max-width: 72%; padding: 9px 14px; border-radius: 14px;
+            font-size: 14px; line-height: 1.45; word-break: break-word;
+        }
+        .chat-msg.mine {
+            align-self: flex-end; background: #1a1a1a; color: #fff;
+            border-radius: 14px 14px 4px 14px;
+        }
+        .chat-msg.theirs {
+            align-self: flex-start; background: #fff; border: 1px solid #e5e7eb;
+            border-radius: 14px 14px 14px 4px;
+        }
+        .chat-msg-time { font-size: 10px; color: #aaa; margin-top: 3px; text-align: right; }
+        .chat-msg.theirs .chat-msg-time { text-align: left; color: #bbb; }
+        .chat-input-bar {
+            padding: 12px 14px; border-top: 1px solid #f0f0f0;
+            display: flex; gap: 8px; align-items: center; background: #fff; flex-shrink: 0;
+        }
+        .chat-input {
+            flex: 1; border: 1.5px solid #e5e7eb; border-radius: 20px;
+            padding: 9px 16px; font-size: 14px; font-family: inherit;
+            outline: none; transition: border .2s;
+        }
+        .chat-input:focus { border-color: #1a1a1a; }
+        .chat-send-btn {
+            background: #1a1a1a; color: #fff; border: none; border-radius: 50%;
+            width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: opacity .2s; flex-shrink: 0;
+        }
+        .chat-send-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+        /* ── Loading spinner for chat ── */
+        .chat-loading { text-align: center; color: #aaa; font-size: 13px; padding: 20px; }
+
+        /* ── Bookings panel ── */
+        .bookings-panel { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,.08); }
+
+        /* Modal */
+        #modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+            z-index: 99998; align-items: center; justify-content: center;
+        }
+        #modal.open { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 16px; padding: 28px;
+            max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+        }
+        #modal-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        #modal-body { font-size: 14px; color: #555; margin-bottom: 20px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-modal-cancel { background: none; border: 1.5px solid #e5e7eb; padding: 8px 18px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .btn-modal-confirm { background: #1a1a1a; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .btn-modal-confirm.danger { background: #dc2626; }
+    </style>
+</head>
 <body>
 
-<!-- NAVBAR -->
-<!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
-                    <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span>RideShare</span>
-            </div>
-            <div class="nav-links">
-                <a href="home.html" >Home</a>
-                <a href="profile.html" >Profile</a>
-                <a href="find_ride.html" target="_blank">Find Rides</a>
-                <a href="offer_ride.html" target="_blank">Offer Ride</a>
-                <a href="login.html" >Login</a>
-                <a href="register.html"  class="btn-primary">Sign Up</a> 
-            </div>
+<!-- ── TOAST ── -->
+<div id="toast-area"></div>
+
+<!-- ── MODAL ── -->
+<div id="modal" onclick="handleModalOverlayClick(event)">
+    <div class="modal-box">
+        <div id="modal-title"></div>
+        <div id="modal-body"></div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-modal-confirm" id="modal-confirm-btn">Confirm</button>
         </div>
-    </nav>
-
-<!-- PROFILE HEADER -->
- <section class="profile-header">
-    <div class="container">
-
-        <div class="profile-info">
-
-            <!-- LEFT -->
-            <div class="profile-left">
-                <div class="profile-avatar-large" id="avatar"></div>
-
-                <div class="profile-text">
-                    <h1 id="userName"></h1>
-                    <p id="userEmail"></p>
-                    <p id="userType"></p>
-                </div>
-            </div>
-
-            <!-- RIGHT -->
-            <div class="profile-right">
-                <div class="stat-box">
-                    <div class="stat-number" id="totalTrips">0</div>
-                    <div>Total Trips</div>
-                </div>
-            </div>
-
-        </div>
-
     </div>
-</section>
-<!----
+</div>
+
+<!-- ══════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>RideShare</span>
+        </div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="profile.html" class="active">Profile</a>
+            <a href="find_ride.html">Find Rides</a>
+            <a href="offer_ride.html">Offer Ride</a>
+            <a href="login.html">Login</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     PROFILE HEADER
+══════════════════════════════════════════ -->
 <section class="profile-header">
     <div class="container">
-
         <div class="profile-info">
-            <div class="profile-avatar-large" id="avatar"></div>
-            <div>
-                <h1 id="userName"></h1>
-                <p id="userEmail"></p>
-                <p id="userType"></p>
+
+            <!-- Avatar with upload -->
+            <div class="avatar-wrapper" title="Click to change photo" onclick="triggerAvatarUpload()">
+                <div class="profile-avatar-large" id="profile-avatar">?</div>
+                <div class="avatar-upload-overlay">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                    <span>Change</span>
+                </div>
+                <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
             </div>
-                <div class="stat-box">
-               
-                <div class="stat-number" id="totalTrips">0</div>
-                <div>Total Trips</div>
-            </div> 
+
+            <div class="profile-details">
+                <h1 id="display-name">Loading…</h1>
+                <div class="driver-rating" id="rating-text">★★★★★</div>
+                <p id="member-info">Member • <span class="verified-badge">✓ Verified</span></p>
+            </div>
+
+            <button class="btn-edit-profile" onclick="toggleEditMode()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <span id="edit-btn-text">Edit Profile</span>
+            </button>
         </div>
 
-      
+        <!-- Stats -->
         <div class="profile-stats">
-            <div class="">
-                <div class="stat-number" id="responseRate">0%</div>
-                <div>Response</div>
+            <div class="stat-box">
+                <div class="stat-number" id="stat-trips" data-target="0">0</div>
+                <div class="stat-label">Total Trips</div>
             </div>
             <div class="stat-box">
-               
-                <div class="stat-number" id="totalTrips">0</div>
-                <div>Total Trips</div>
+                <div class="stat-number" id="stat-rating" data-target="0" data-decimal="1">0</div>
+                <div class="stat-label">Rating</div>
             </div>
-            <div class="">
-                <div class="stat-number" id="rating">0</div>
-                <div>Rating</div>
+            <div class="stat-box">
+                <div class="stat-number" id="stat-response" data-target="0" data-suffix="%">0%</div>
+                <div class="stat-label">Response Rate</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="stat-offers" data-target="0">0</div>
+                <div class="stat-label">Active Offers</div>
             </div>
         </div>
-   
     </div>
 </section>
- -->
-<!-- PROFILE CONTENT -->
+
+<!-- ══════════════════════════════════════════
+     PROFILE CONTENT
+══════════════════════════════════════════ -->
 <section class="profile-section">
-<div class="container">
+    <div class="container">
 
-<!-- TABS -->
-<div class="tabs">
-    <button class="tab active" onclick="switchTab('info', this)">Personal Info</button>
-    <!--<button class="tab" onclick="switchTab('rides', this)">My Rides</button>
-    <button class="tab" onclick="switchTab('bookings', this)">My Bookings</button>
-    <button class="tab" onclick="switchTab('reviews', this)">Reviews</button>--->
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('info', this)">Personal Info</button>
+            <button class="tab" onclick="switchTab('rides', this)">My Rides</button>
+            <button class="tab" onclick="switchTab('bookings', this)">My Bookings</button>
+            <button class="tab" onclick="switchTab('reviews', this)">Reviews</button>
+            <button class="tab" id="messages-tab-btn" onclick="switchTab('messages', this)">
+                Messages <span id="unread-badge" style="display:none;background:#dc2626;color:#fff;border-radius:999px;padding:1px 6px;font-size:11px;margin-left:4px">0</span>
+            </button>
+        </div>
+
+        <!-- ══ TAB: PERSONAL INFO ══ -->
+        <div id="info-tab" class="tab-content active">
+
+            <!-- Public Info -->
+            <div class="profile-card">
+                <div class="card-header-row">
+                    <h2>Public Information</h2>
+                    <div class="info-edit-actions-bar" id="info-edit-actions">
+                        <button class="btn-save" onclick="saveAllFields()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Save all
+                        </button>
+                        <button class="btn-discard" onclick="discardAllFields()">Cancel</button>
+                    </div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item" data-field="fullname">
+                        <span class="info-label">Full Name</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-fullname">—</span>
+                            <button class="btn-field-edit" onclick="editField('fullname')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="info-item" data-field="email">
+                        <span class="info-label">Email</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-email">—</span>
+                            <button class="btn-field-edit" onclick="editField('email')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="info-item" data-field="phone">
+                        <span class="info-label">Phone</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-phone">—</span>
+                            <button class="btn-field-edit" onclick="editField('phone')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Account Type</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-user-type">—</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Member Since</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-member-since">—</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Verification</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value verified">✓ Verified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="profile-card">
+                <h2>Preferences</h2>
+                <div class="info-grid">
+                    <div class="info-item" data-field="music">
+                        <span class="info-label">Music</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-music">Classical & Jazz</span>
+                            <button class="btn-field-edit" onclick="editField('music')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="info-item" data-field="conversation">
+                        <span class="info-label">Conversation</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="field-conversation">Moderate</span>
+                            <button class="btn-field-edit" onclick="editField('conversation')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Smoking</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="pref-smoking">Non-smoker</span>
+                            <button class="btn-toggle-pref" onclick="togglePref('smoking', 'Smoker', 'Non-smoker')">Toggle</button>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Pets</span>
+                        <div class="info-value-wrap">
+                            <span class="info-value" id="pref-pets">No pets</span>
+                            <button class="btn-toggle-pref" onclick="togglePref('pets', 'Pets OK', 'No pets')">Toggle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="logout()" style="background:#dc2626;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:14px;cursor:pointer;margin-top:8px;">
+                Logout
+            </button>
+        </div>
+
+        <!-- ══ TAB: MY RIDES ══ -->
+        <div id="rides-tab" class="tab-content">
+            <div class="profile-card">
+                <div class="card-header-row">
+                    <h2>Active Ride Offers</h2>
+                    <button class="btn-add-ride" onclick="window.location.href='offer_ride.html'">+ Offer a Ride</button>
+                </div>
+                <div id="rides-list"></div>
+            </div>
+        </div>
+
+        <!-- ══ TAB: MY BOOKINGS ══ -->
+        <div id="bookings-tab" class="tab-content">
+            <div class="profile-card">
+                <div class="card-header-row">
+                    <h2>My Bookings</h2>
+                    <div class="filter-group">
+                        <button class="filter-btn active" onclick="filterBookings('all', this)">All</button>
+                        <button class="filter-btn" onclick="filterBookings('confirmed', this)">Confirmed</button>
+                        <button class="filter-btn" onclick="filterBookings('pending', this)">Pending</button>
+                        <button class="filter-btn" onclick="filterBookings('cancelled', this)">Cancelled</button>
+                    </div>
+                </div>
+                <div id="bookings-list"></div>
+                <div id="no-bookings-msg" class="empty-state" style="display:none">No bookings in this category.</div>
+            </div>
+        </div>
+
+        <!-- ══ TAB: REVIEWS ══ -->
+        <div id="reviews-tab" class="tab-content">
+            <div class="profile-card">
+                <div class="card-header-row">
+                    <h2>Reviews</h2>
+                    <div>
+                        <input type="text" class="reviews-search" placeholder="Search reviews…"
+                            oninput="filterReviews(this.value)" id="reviews-search-input">
+                    </div>
+                </div>
+
+                <div class="rating-summary">
+                    <div class="rating-big">
+                        <span class="rating-num" id="review-avg">4.9</span>
+                        <div class="rating-stars-big">★★★★★</div>
+                        <span class="rating-count" id="review-count">0 reviews</span>
+                    </div>
+                    <div class="rating-bars" id="rating-bars">
+                        <div class="rating-bar-row"><span>5 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-5" style="width:0%"></div></div><span id="bar-5-pct">0%</span></div>
+                        <div class="rating-bar-row"><span>4 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-4" style="width:0%"></div></div><span id="bar-4-pct">0%</span></div>
+                        <div class="rating-bar-row"><span>3 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-3" style="width:0%"></div></div><span id="bar-3-pct">0%</span></div>
+                        <div class="rating-bar-row"><span>2 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-2" style="width:0%"></div></div><span id="bar-2-pct">0%</span></div>
+                        <div class="rating-bar-row"><span>1 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-1" style="width:0%"></div></div><span id="bar-1-pct">0%</span></div>
+                    </div>
+                </div>
+
+                <div class="reviews-list" id="reviews-list"></div>
+                <div id="no-reviews-msg" class="empty-state" style="display:none">No reviews match your search.</div>
+
+                <div class="add-review-section">
+                    <h3>Leave a Review</h3>
+                    <div class="stars-input-row" onmouseleave="resetReviewRating()">
+                        <span class="star-btn" data-value="1" onclick="setReviewRating(1)" onmouseenter="hoverReviewRating(1)">★</span>
+                        <span class="star-btn" data-value="2" onclick="setReviewRating(2)" onmouseenter="hoverReviewRating(2)">★</span>
+                        <span class="star-btn" data-value="3" onclick="setReviewRating(3)" onmouseenter="hoverReviewRating(3)">★</span>
+                        <span class="star-btn" data-value="4" onclick="setReviewRating(4)" onmouseenter="hoverReviewRating(4)">★</span>
+                        <span class="star-btn" data-value="5" onclick="setReviewRating(5)" onmouseenter="hoverReviewRating(5)">★</span>
+                        <span class="rating-hint" id="rating-hint">Select a rating</span>
+                    </div>
+                    <div class="review-textarea-wrap">
+                        <textarea id="review-textarea" class="review-textarea" placeholder="Share your experience…"
+                            maxlength="300" oninput="onReviewInput()"></textarea>
+                        <span class="char-counter" id="char-counter">0 / 300</span>
+                    </div>
+                    <button class="btn-submit-review" id="submit-review-btn" onclick="submitReview()" disabled>Submit Review</button>
+                </div>
+            </div>
+        </div>
+        <!-- ══ TAB: MESSAGES ══ -->
+<div id="messages-tab" class="tab-content">
+    <div class="profile-card" style="padding:0;overflow:hidden;">
+        <div class="messages-layout">
+
+            <!-- Conversations sidebar -->
+            <div class="conversations-panel">
+                <div class="conversations-header">💬 Messages</div>
+                <div id="conversations-list"></div>
+                <div class="conv-empty" id="conv-empty">No conversations yet.</div>
+            </div>
+
+            <!-- Chat panel -->
+            <div class="chat-panel" id="chat-panel">
+                <div class="chat-placeholder" id="chat-placeholder">
+                    <span>Select a conversation</span>
+                </div>
+
+                <div id="active-chat" style="display:none;flex-direction:column;height:100%;">
+                    <div class="chat-header">
+                        <div class="chat-header-avatar" id="chat-header-avatar">?</div>
+                        <div class="chat-header-info">
+                            <div class="chat-header-name" id="chat-header-name">Driver</div>
+                            <div class="chat-header-sub" id="chat-header-sub">Ride #—</div>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chat-messages"></div>
+
+                    <div class="chat-input-bar">
+                        <input type="text" class="chat-input" id="chat-input"
+                            placeholder="Type a message…"
+                            onkeydown="if(event.key==='Enter') sendMessage()">
+
+                        <button class="chat-send-btn" onclick="sendMessage()">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
-<!-- ================= INFO ================= -->
-<div id="info-tab" class="tab-content active">
+      
+        </div>
 
-<div class="profile-card">
-<h2>Public Information</h2>
-
-<div class="info-grid">
-<div><strong>Name:</strong> <span id="userNameInfo"></span></div>
-<div><strong>Last Name:</strong> <span id="userLastNameInfo"></span></div>
-<div><strong>Email:</strong> <span id="userEmailInfo"></span></div>
-<div><strong>Type:</strong> <span id="userTypeInfo"></span></div>
-</div>
-<br><br>
-<!--<button class="btn-edit" onclick="editProfile()">Edit Profile</button>--->
-<button class="btn-edit" onclick="logout()">Logout</button>
-
-
-
-
-</div>
-
-<!-- ================= RIDES ================= -->
-<div id="rides-tab" class="tab-content">
-<h2>My Rides</h2>
-<div id="ridesContainer"></div>
-</div>
-
-<!-- ================= BOOKINGS ================= -->
-<div id="bookings-tab" class="tab-content">
-<h2>My Bookings</h2>
-<div id="bookingsContainer"></div>
-</div>
-
-<!-- ================= REVIEWS ================= 
-<div id="reviews-tab" class="tab-content">
-<h2>My Reviews</h2>
-<div id="reviewsContainer"></div>
-</div>
--->
-</div>
+    </div>
 </section>
 
- <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>RideShare</h4>
-                    <p>Connecting travelers across Tunisia</p>
-                </div>
-                <div class="footer-section">
-    <h4>Quick Links</h4>
-    <a href="info.html#about" target="_blank">About Us</a>
-    <a href="info.html#safety" target="_blank">Safety</a>
-    <a href="info.html#support" target="_blank">Support</a>
-</div>
-
-<div class="footer-section">
-    <h4>Legal</h4>
-    <a href="info.html#terms" target="_blank">Terms of Service</a>
-    <a href="info.html#privacy" target="_blank">Privacy Policy</a>
-    <a href="info.html#cookies" target="_blank">Cookie Policy</a>
-</div>
-
-<div class="footer-section">
-    <h4>Contact Us</h4>
-    <a href="info.html#contact" target="_blank">Contact Page</a>
-</div>
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>RideShare</h4>
+                <p>Connecting travelers across Tunisia</p>
             </div>
-        
-                <p class="textfooter"> 2026 RideShare </p>
-            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="info.html#about">About Us</a>
+                <a href="info.html#safety">Safety</a>
+                <a href="info.html#support">Support</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="info.html#terms">Terms of Service</a>
+                <a href="info.html#privacy">Privacy Policy</a>
+            </div>
         </div>
-    </footer>
+        <p class="footer-bottom">© 2026 RideShare</p>
+    </div>
+</footer>
 
-<!-- SCRIPT -->
 <script>
-
-// ================= AUTH =================
+/* ═══════════════════════════════════════════════════════════════
+   0. AUTH GUARD — redirect to login if no session
+═══════════════════════════════════════════════════════════════ */
 const storedUser = localStorage.getItem("user");
-
 if (!storedUser) {
-    alert("You are not logged in ❌");
+    alert("Please login first.");
     window.location.href = "login.html";
 }
-
 const userLocal = JSON.parse(storedUser);
+const BASE = "http://localhost/find_ride/backend";
 
-console.log("USER LOCAL:", userLocal);
+/* ═══════════════════════════════════════════════════════════════
+   1. NAVBAR SCROLL
+═══════════════════════════════════════════════════════════════ */
+window.addEventListener("scroll", () => {
+    document.getElementById("navbar").classList.toggle("scrolled", window.scrollY > 50);
+});
 
-// ================= TABS =================
-function switchTab(tabName, el) {
+/* ═══════════════════════════════════════════════════════════════
+   2. TOAST
+═══════════════════════════════════════════════════════════════ */
+function showToast(message, type = 'success') {
+    const area = document.getElementById('toast-area');
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+    toast.innerHTML = `<span>${icons[type] || '✓'}</span><span>${message}</span>`;
+    area.appendChild(toast);
+    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. MODAL
+═══════════════════════════════════════════════════════════════ */
+function openModal(title, body, confirmText, onConfirm, isDanger = true) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').textContent = body;
+    const btn = document.getElementById('modal-confirm-btn');
+    btn.textContent = confirmText || 'Confirm';
+    btn.className = isDanger ? 'btn-modal-confirm danger' : 'btn-modal-confirm';
+    btn.onclick = () => { closeModal(); onConfirm(); };
+    document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function handleModalOverlayClick(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ═══════════════════════════════════════════════════════════════
+   4. TABS
+═══════════════════════════════════════════════════════════════ */
+function switchTab(tabName, clickedBtn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-    el.classList.add('active');
+    clickedBtn.classList.add('active');
     document.getElementById(tabName + '-tab').classList.add('active');
+    if (tabName === 'messages') initMessagesTab();
 }
 
-// ================= LOAD USER =================
-
+/* ═══════════════════════════════════════════════════════════════
+   5. LOAD USER — GET /get_user.php?id=
+═══════════════════════════════════════════════════════════════ */
 async function loadUser() {
     try {
-        const res = await fetch(`http://localhost/find_ride/backend/get_user.php?id=${userLocal.id}`);
-        const text = await res.text();
-console.log("PROFILE RESPONSE:", text);
+        const res = await fetch(`${BASE}/get_user.php?id=${userLocal.id}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const user = await res.json();
 
-let user;
-try {
-    user = JSON.parse(text);
-} catch (e) {
-    alert("Invalid JSON from profile ❌");
-    return;
-}
+        const fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
+        document.getElementById('display-name').textContent = fullName || 'Unknown';
+        document.getElementById('field-fullname').textContent = fullName || '—';
+        document.getElementById('field-email').textContent = user.email || '—';
+        document.getElementById('field-phone').textContent = user.phone || '—';
+        document.getElementById('field-user-type').textContent =
+            user.user_type ? (user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1)) : 'Passenger';
 
-        if (!user || user.error) {
-            alert("Error loading user ❌");
-            return;
+        if (user.created_at) {
+            const d = new Date(user.created_at);
+            document.getElementById('field-member-since').textContent =
+                d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
         }
 
-        const fullName = `${user.first_name} ${user.last_name}`;
+        // Avatar initials
+        const initials = (
+            (user.first_name ? user.first_name[0] : '') +
+            (user.last_name  ? user.last_name[0]  : '')
+        ).toUpperCase();
+        const av = document.getElementById('profile-avatar');
+        av.textContent = initials || '?';
 
-        // HEADER
-        document.getElementById("userName").textContent = fullName;
-        document.getElementById("userEmail").textContent = user.email;
-        document.getElementById("userType").textContent = user.user_type || "";
-
-        // INFO TAB
-        document.getElementById("userNameInfo").textContent = user.first_name;
-        document.getElementById("userLastNameInfo").textContent = user.last_name;
-        document.getElementById("userEmailInfo").textContent = user.email;
-        document.getElementById("userTypeInfo").textContent = user.user_type || "";
-
-        // AVATAR
-        const initials =
-            (user.first_name?.[0] || "") +
-            (user.last_name?.[0] || "");
-
-        document.getElementById("avatar").textContent = initials.toUpperCase();
-
-    } catch (err) {
-        console.error(err);
-        alert("Server error loading profile ❌");
+    } catch (e) {
+        showToast('Failed to load user profile.', 'error');
     }
 }
 
-// ================= STATS =================
+/* ═══════════════════════════════════════════════════════════════
+   6. LOAD STATS — GET /get_user_stats.php?user_id=
+═══════════════════════════════════════════════════════════════ */
 async function loadStats() {
-    const res = await fetch(`http://localhost/find_ride/backend/get_user_stats.php?user_id=${userLocal.id}`);
-    const stats = await res.json();
-
-    document.getElementById("totalTrips").textContent = stats.totalTrips;
-    document.getElementById("rating").textContent = stats.rating;
-    document.getElementById("responseRate").textContent = stats.responseRate;
-}
-
-// ================= RIDES =================
-async function loadRides() {
     try {
-        const res = await fetch(`http://localhost/find_ride/backend/get_user_rides.php?user_id=${userLocal.id}`);
-        const text = await res.text();
-console.log("RIDES RESPONSE:", text);
+        const res = await fetch(`${BASE}/get_user_stats.php?user_id=${userLocal.id}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const s = await res.json();
 
-let rides;
-try {
-    rides = JSON.parse(text);
-} catch (e) {
-    alert("Invalid JSON from rides ❌");
-    return;
+        setStatTarget('stat-trips',    s.totalTrips    || 0, 0, '');
+        setStatTarget('stat-rating',   s.rating        || 0, 1, '');
+        setStatTarget('stat-response', s.responseRate  || 0, 0, '%');
+        setStatTarget('stat-offers',   s.activeOffers  || 0, 0, '');
+        animateStats();
+    } catch (e) {
+        // Silently keep defaults at 0
+    }
 }
 
-        let container = document.getElementById("ridesContainer");
-        container.innerHTML = "";
+function setStatTarget(id, val, dec, suffix) {
+    const el = document.getElementById(id);
+    el.dataset.target  = val;
+    el.dataset.decimal = dec;
+    el.dataset.suffix  = suffix;
+}
 
-        if (!rides || rides.length === 0) {
-            container.innerHTML = "<p>No rides yet</p>";
+function animateStats() {
+    const stats    = document.querySelectorAll('.stat-number[data-target]');
+    const duration = 1400;
+    const start    = performance.now();
+    function step(now) {
+        const p    = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        stats.forEach(el => {
+            const target = parseFloat(el.dataset.target) || 0;
+            const dec    = parseInt(el.dataset.decimal)  || 0;
+            const suf    = el.dataset.suffix || '';
+            el.textContent = (target * ease).toFixed(dec) + suf;
+        });
+        if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. AVATAR UPLOAD (client-side preview only)
+═══════════════════════════════════════════════════════════════ */
+function triggerAvatarUpload() { document.getElementById('avatar-input').click(); }
+
+function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showToast('Invalid format. Use JPG, PNG or WebP.', 'error'); return;
+    }
+    if (file.size > 5 * 1024 * 1024) { showToast('Image too large. Max 5 MB.', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+        const av = document.getElementById('profile-avatar');
+        av.style.backgroundImage    = `url(${e.target.result})`;
+        av.style.backgroundSize     = 'cover';
+        av.style.backgroundPosition = 'center';
+        av.textContent = '';
+        showToast('Profile photo updated!', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. INLINE FIELD EDITING
+═══════════════════════════════════════════════════════════════ */
+const originalValues = {};
+
+function editField(fieldId) {
+    const valueEl = document.getElementById('field-' + fieldId);
+    if (!valueEl) return;
+    const btn = valueEl.closest('.info-value-wrap').querySelector('.btn-field-edit');
+    if (!btn) return;
+
+    if (btn.textContent.trim() === 'Edit') {
+        originalValues[fieldId] = valueEl.textContent;
+        const input = document.createElement('input');
+        input.className = 'inline-input';
+        input.value     = valueEl.textContent === '—' ? '' : valueEl.textContent;
+        input.setAttribute('data-field', fieldId);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter')  saveField(fieldId);
+            if (e.key === 'Escape') cancelField(fieldId);
+        });
+        valueEl.replaceWith(input);
+        btn.textContent = 'Save';
+        btn.classList.add('saving');
+        input.focus(); input.select();
+        document.getElementById('info-edit-actions').style.display = 'flex';
+    } else {
+        saveField(fieldId);
+    }
+}
+
+function saveField(fieldId) {
+    const input = document.querySelector(`input.inline-input[data-field="${fieldId}"]`);
+    if (!input) return;
+    const v = input.value.trim();
+    if (!v) { showToast('Field cannot be empty.', 'error'); input.focus(); return; }
+    if (fieldId === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+        showToast('Invalid email address.', 'error'); input.focus(); return;
+    }
+    if (fieldId === 'phone' && !/^[\d\s\+\-\(\)]{8,}$/.test(v)) {
+        showToast('Invalid phone number.', 'error'); input.focus(); return;
+    }
+    const span = document.createElement('span');
+    span.className = 'info-value';
+    span.id        = 'field-' + fieldId;
+    span.textContent = v;
+    input.replaceWith(span);
+    const btn = span.closest('.info-value-wrap').querySelector('.btn-field-edit');
+    if (btn) { btn.textContent = 'Edit'; btn.classList.remove('saving'); }
+    if (fieldId === 'fullname') document.getElementById('display-name').textContent = v;
+    showToast('Field updated!', 'success');
+    checkIfAllSaved();
+}
+
+function cancelField(fieldId) {
+    const input = document.querySelector(`input.inline-input[data-field="${fieldId}"]`);
+    if (!input) return;
+    const span = document.createElement('span');
+    span.className   = 'info-value';
+    span.id          = 'field-' + fieldId;
+    span.textContent = originalValues[fieldId] || '—';
+    input.replaceWith(span);
+    const btn = span.closest('.info-value-wrap').querySelector('.btn-field-edit');
+    if (btn) { btn.textContent = 'Edit'; btn.classList.remove('saving'); }
+    checkIfAllSaved();
+}
+
+function saveAllFields() {
+    document.querySelectorAll('input.inline-input').forEach(inp => {
+        const f = inp.getAttribute('data-field');
+        if (f) saveField(f);
+    });
+    document.getElementById('info-edit-actions').style.display = 'none';
+}
+
+function discardAllFields() {
+    document.querySelectorAll('input.inline-input').forEach(inp => {
+        const f = inp.getAttribute('data-field');
+        if (f) cancelField(f);
+    });
+    document.getElementById('info-edit-actions').style.display = 'none';
+    showToast('Changes discarded.', 'info');
+}
+
+function checkIfAllSaved() {
+    if (!document.querySelectorAll('input.inline-input').length)
+        document.getElementById('info-edit-actions').style.display = 'none';
+}
+
+function toggleEditMode() {
+    const btn     = document.getElementById('edit-btn-text');
+    const editBtns = document.querySelectorAll('.btn-field-edit');
+    if (btn.textContent === 'Edit Profile') {
+        btn.textContent = 'Done';
+        editBtns.forEach(b => b.style.display = 'inline-flex');
+        showToast('Edit mode on.', 'info');
+    } else {
+        btn.textContent = 'Edit Profile';
+        saveAllFields();
+        editBtns.forEach(b => b.style.display = 'none');
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. PREFERENCES TOGGLE
+═══════════════════════════════════════════════════════════════ */
+function togglePref(key, a, b) {
+    const el = document.getElementById('pref-' + key);
+    el.textContent = el.textContent === a ? b : a;
+    showToast('Preference updated.', 'success');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. MY RIDES — GET /get_user_rides.php?user_id=
+═══════════════════════════════════════════════════════════════ */
+async function loadRides() {
+    const container = document.getElementById('rides-list');
+    container.innerHTML = '<p style="color:#aaa;font-size:14px;padding:12px">Loading…</p>';
+    try {
+        const res    = await fetch(`${BASE}/get_user_rides.php?user_id=${userLocal.id}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const rides  = await res.json();
+        container.innerHTML = '';
+        if (!Array.isArray(rides) || !rides.length) {
+            container.innerHTML = '<div class="empty-state">No ride offers yet. <a href="offer_ride.html" style="color:#1a1a1a;font-weight:600">Offer one now →</a></div>';
+            return;
+        }
+        rides.forEach(r => container.appendChild(buildRideCard(r)));
+    } catch (e) {
+        container.innerHTML = '<div class="empty-state">Failed to load rides. Please refresh.</div>';
+    }
+}
+
+function buildRideCard(r) {
+    const card = document.createElement('div');
+    card.className = 'ride-card';
+    card.id        = 'ride-' + r.id;
+    card.innerHTML = `
+        <div class="ride-status-bar">
+            <span class="ride-status active">● Active</span>
+            <span class="ride-id">#RD-${r.id}</span>
+        </div>
+        <div class="ride-details">
+            <div class="ride-location">
+                <h4>${escHtml(r.departure || r.from_location || '—')}</h4>
+                <p>${escHtml(r.date || '')}</p>
+            </div>
+            <div class="ride-arrow-wrap">
+                <div class="ride-arrow"></div>
+                <span class="ride-duration">${escHtml(r.duration || '')}</span>
+            </div>
+            <div class="ride-location">
+                <h4>${escHtml(r.destination || r.to_location || '—')}</h4>
+                <p>${escHtml(r.time || '')}</p>
+            </div>
+        </div>
+        <div class="ride-meta">
+            <div class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                </svg>
+                ${parseInt(r.seats) || 0} seat${r.seats == 1 ? '' : 's'} available
+            </div>
+            <div class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                ${parseFloat(r.price) || 0} TND / person
+            </div>
+        </div>
+        <div class="ride-actions">
+            <button class="btn-edit"    onclick="editRide(${r.id})">Edit</button>
+            <button class="btn-message" onclick="viewBookings(${r.id})">View Bookings</button>
+            <button class="btn-message btn-danger" onclick="cancelRide(${r.id})">Cancel Ride</button>
+        </div>
+    `;
+    return card;
+}
+
+/* ── Cancel ride ── */
+function cancelRide(rideId) {
+    openModal(
+        'Cancel Ride',
+        'Are you sure you want to cancel this ride? Confirmed passengers will be notified.',
+        'Yes, cancel',
+        async () => {
+            try {
+                await fetch(`${BASE}/cancel_ride.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ride_id: rideId, user_id: userLocal.id })
+                });
+            } catch (e) { /* endpoint may not exist yet, still remove from UI */ }
+            const card = document.getElementById('ride-' + rideId);
+            if (card) {
+                card.style.transition = 'opacity .4s, transform .4s';
+                card.style.opacity    = '0';
+                card.style.transform  = 'translateX(-20px)';
+                setTimeout(() => { card.remove(); showToast('Ride cancelled.', 'info'); }, 400);
+            }
+        }
+    );
+}
+
+/* ── Inline edit ride ── */
+function editRide(rideId) {
+    const card = document.getElementById('ride-' + rideId);
+    if (!card) return;
+    if (card.querySelector('.edit-ride-form')) {
+        card.querySelector('.edit-ride-form').remove(); return;
+    }
+    const locs  = card.querySelectorAll('.ride-location h4');
+    const metas = card.querySelectorAll('.meta-item');
+    const seatsText = metas[0]?.textContent.trim().match(/\d+/)?.[0] || '1';
+    const priceText = metas[1]?.textContent.trim().match(/[\d.]+/)?.[0] || '';
+
+    const form = document.createElement('div');
+    form.className  = 'edit-ride-form';
+    form.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.08);display:grid;gap:12px';
+    form.innerHTML = `
+        <p style="font-weight:600;font-size:14px;margin:0">Edit Ride</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">From</label>
+                <input class="inline-input" id="erf-${rideId}" value="${escAttr(locs[0]?.textContent||'')}">
+            </div>
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">To</label>
+                <input class="inline-input" id="ert-${rideId}" value="${escAttr(locs[1]?.textContent||'')}">
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">Price (TND)</label>
+                <input class="inline-input" type="number" min="1" step="0.5" id="erp-${rideId}" value="${priceText}">
+            </div>
+            <div>
+                <label style="font-size:12px;color:#666;display:block;margin-bottom:4px">Seats</label>
+                <select class="inline-input" id="ers-${rideId}" style="padding:8px">
+                    ${[1,2,3,4,5,6].map(n => `<option value="${n}"${n==seatsText?' selected':''}>${n}</option>`).join('')}
+                </select>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn-discard" onclick="this.closest('.edit-ride-form').remove()">Cancel</button>
+            <button class="btn-save" onclick="saveRideForm(${rideId})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Save
+            </button>
+        </div>
+    `;
+    card.querySelector('.ride-actions').before(form);
+}
+
+function saveRideForm(rideId) {
+    const from  = document.getElementById(`erf-${rideId}`)?.value.trim();
+    const to    = document.getElementById(`ert-${rideId}`)?.value.trim();
+    const price = document.getElementById(`erp-${rideId}`)?.value;
+    const seats = document.getElementById(`ers-${rideId}`)?.value;
+    if (!from || !to) { showToast('Please fill in all fields.', 'error'); return; }
+    const card  = document.getElementById('ride-' + rideId);
+    const locs  = card.querySelectorAll('.ride-location h4');
+    if (locs[0]) locs[0].textContent = from;
+    if (locs[1]) locs[1].textContent = to;
+    // Update meta text
+    const metas = card.querySelectorAll('.meta-item');
+    if (metas[0]) metas[0].innerHTML = metas[0].innerHTML.replace(/\d+\s*seat/, `${seats} seat`);
+    if (metas[1]) metas[1].innerHTML = metas[1].innerHTML.replace(/[\d.]+\s*TND/, `${price} TND`);
+    card.querySelector('.edit-ride-form')?.remove();
+    showToast('Ride updated!', 'success');
+}
+
+/* ── View bookings for a ride ── */
+function viewBookings(rideId) {
+    const card = document.getElementById('ride-' + rideId);
+    if (!card) return;
+    const existing = card.querySelector('.bookings-panel');
+    if (existing) { existing.remove(); return; }
+
+    const panel = document.createElement('div');
+    panel.className = 'bookings-panel';
+    panel.innerHTML = `
+        <p style="font-weight:600;font-size:14px;margin:0 0 12px">Booking Requests</p>
+        <div id="bp-${rideId}"><p class="chat-loading">Loading…</p></div>
+    `;
+    card.appendChild(panel);
+
+    fetch(`${BASE}/get_ride_bookings.php?ride_id=${rideId}`)
+        .then(r => r.json())
+        .then(bookings => {
+            const bp = document.getElementById('bp-' + rideId);
+            if (!bp) return;
+            if (!Array.isArray(bookings) || !bookings.length) {
+                bp.innerHTML = '<p style="font-size:13px;color:#aaa">No bookings yet for this ride.</p>'; return;
+            }
+            bp.innerHTML = bookings.map(b => {
+                const statusCls = b.status === 'confirmed' ? 'badge-success' : b.status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
+                const statusTxt = b.status ? (b.status.charAt(0).toUpperCase() + b.status.slice(1)) : 'Pending';
+                return `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div class="driver-avatar">${(b.passenger_name||'P')[0]}</div>
+                            <div>
+                                <div style="font-weight:500;font-size:14px">${escHtml(b.passenger_name||'Passenger')}</div>
+                                <div style="font-size:12px;color:#888">${escHtml(b.seats_booked||1)} seat(s) · ${escHtml(b.date||'')}</div>
+                            </div>
+                        </div>
+                        <span class="condition-badge ${statusCls}">${statusTxt}</span>
+                    </div>
+                `;
+            }).join('');
+        })
+        .catch(() => {
+            const bp = document.getElementById('bp-' + rideId);
+            if (bp) bp.innerHTML = '<p style="font-size:13px;color:#aaa">Could not load bookings.</p>';
+        });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   11. MY BOOKINGS — GET /get_bookings.php?user_id=
+═══════════════════════════════════════════════════════════════ */
+async function loadBookings() {
+    const container = document.getElementById('bookings-list');
+    container.innerHTML = '<p style="color:#aaa;font-size:14px;padding:12px">Loading…</p>';
+    try {
+        const res      = await fetch(`${BASE}/get_bookings.php?user_id=${userLocal.id}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const bookings = await res.json();
+        container.innerHTML = '';
+
+        if (!Array.isArray(bookings) || !bookings.length) {
+            document.getElementById('no-bookings-msg').style.display = 'block'; return;
+        }
+
+        bookings.forEach(b => {
+            const initials   = (b.driver_name || 'D')[0].toUpperCase();
+            const status     = (b.status || 'pending').toLowerCase();
+            const statusCls  = status === 'confirmed' ? 'badge-success' : status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
+            const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+            const card = document.createElement('div');
+            card.className      = 'ride-card';
+            card.id             = 'booking-' + b.id;
+            card.dataset.status = status;
+            card.innerHTML = `
+                <div class="ride-header">
+                    <div class="ride-driver">
+                        <div class="driver-avatar">${initials}</div>
+                        <div>
+                            <h3 style="margin:0;font-size:15px">${escHtml(b.driver_name || 'Driver')}</h3>
+                            <div style="color:#f59e0b;font-size:13px">★★★★★</div>
+                        </div>
+                    </div>
+                    <div class="condition-badge ${statusCls}" id="badge-booking-${b.id}">${statusText}</div>
+                </div>
+                <div class="ride-details">
+                    <div class="ride-location">
+                        <h4>${escHtml(b.departure || b.from_location || '—')}</h4>
+                        <p>${escHtml(b.date || '')}</p>
+                    </div>
+                    <div class="ride-arrow-wrap"><div class="ride-arrow"></div></div>
+                    <div class="ride-location">
+                        <h4>${escHtml(b.destination || b.to_location || '—')}</h4>
+                    </div>
+                </div>
+                <div class="ride-actions" id="booking-actions-${b.id}">
+                    <button class="btn-message"
+                        onclick="openConversation(${parseInt(b.driver_id)||0}, '${escAttr(b.driver_name||'Driver')}', ${parseInt(b.ride_id||b.id)||0})">
+                        Message Driver
+                    </button>
+                    ${status !== 'cancelled'
+                        ? `<button class="btn-message btn-danger" onclick="cancelBooking(${b.id})">Cancel Booking</button>`
+                        : ''}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } catch (e) {
+        container.innerHTML = '<div class="empty-state">Failed to load bookings. Please refresh.</div>';
+    }
+}
+
+function filterBookings(status, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards   = document.querySelectorAll('#bookings-list .ride-card');
+    let   visible = 0;
+    cards.forEach(c => {
+        const show = status === 'all' || c.dataset.status === status;
+        c.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('no-bookings-msg').style.display = visible === 0 ? 'block' : 'none';
+}
+
+function cancelBooking(bookingId) {
+    openModal(
+        'Cancel Booking',
+        'Are you sure you want to cancel this booking?',
+        'Yes, cancel',
+        async () => {
+            // Optional: call a cancel_booking.php endpoint if it exists
+            const card = document.getElementById('booking-' + bookingId);
+            if (!card) return;
+            card.dataset.status = 'cancelled';
+            const badge = document.getElementById('badge-booking-' + bookingId);
+            if (badge) { badge.className = 'condition-badge badge-cancelled'; badge.textContent = 'Cancelled'; }
+            const actions = document.getElementById('booking-actions-' + bookingId);
+            if (actions) {
+                actions.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '.4'; });
+            }
+            showToast('Booking cancelled.', 'info');
+        }
+    );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. REVIEWS — GET /get_reviews.php?user_id=  (not in backend yet → demo fallback)
+═══════════════════════════════════════════════════════════════ */
+async function loadReviews() {
+
+    const container = document.getElementById('reviews-list');
+    if (!container) return;
+
+    try {
+        const res = await fetch(`${BASE}/get_reviews.php?user_id=${userLocal.id}`);
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        const reviews = await res.json();
+
+        container.innerHTML = '';
+
+        if (!Array.isArray(reviews) || !reviews.length) {
+            container.innerHTML = `<div class="empty-state">No reviews yet.</div>`;
+            document.getElementById('review-count').textContent = '0 reviews';
             return;
         }
 
-        rides.forEach(r => {
-            container.innerHTML += `
-            <div class="ride-card">
-                <h3>${r.departure} → ${r.destination}</h3>
-                <p>${r.date}</p>
-                <p>${r.seats} seats</p>
-            </div>`;
+        reviews.forEach(r => 
+            appendReviewEl(container, r.author, r.rating, r.text, r.trip, r.date)
+        );
+
+        updateRatingBars(reviews);
+
+        document.getElementById('review-count').textContent =
+            reviews.length + ' review' + (reviews.length !== 1 ? 's' : '');
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `<div class="empty-state">Failed to load reviews.</div>`;
+    }
+}
+
+
+
+function updateRatingBars(reviews) {
+    const counts = { 1:0, 2:0, 3:0, 4:0, 5:0 };
+    let sum = 0;
+    reviews.forEach(r => { const rt = Math.round(r.rating)||5; counts[rt] = (counts[rt]||0)+1; sum += rt; });
+    const total = reviews.length || 1;
+    const avg   = (sum / total).toFixed(1);
+    document.getElementById('review-avg').textContent = avg;
+    [1,2,3,4,5].forEach(n => {
+        const pct = Math.round((counts[n] / total) * 100);
+        const bar = document.getElementById('bar-' + n);
+        const lbl = document.getElementById('bar-' + n + '-pct');
+        if (bar) bar.style.width = pct + '%';
+        if (lbl) lbl.textContent = pct + '%';
+    });
+}
+
+function appendReviewEl(container, author, rating, text, trip, date) {
+    const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const el    = document.createElement('div');
+    el.className       = 'review-item';
+    el.dataset.keywords = (text + ' ' + author).toLowerCase();
+    el.innerHTML = `
+        <div class="review-header">
+            <div class="review-author-info">
+                <div class="review-avatar">${author[0]}</div>
+                <span class="review-author">${escHtml(author)}</span>
+            </div>
+            <span class="review-stars">${stars} ${rating}.0</span>
+        </div>
+        <p class="review-text">"${escHtml(text)}"</p>
+        <div class="review-footer">
+            <div class="review-meta">${trip ? 'Trip: ' + escHtml(trip) + ' · ' : ''}${escHtml(date)}</div>
+            <button class="btn-helpful" onclick="markHelpful(this)">👍 Helpful</button>
+        </div>
+    `;
+    container.appendChild(el);
+}
+
+function filterReviews(q) {
+    q = q.toLowerCase().trim();
+    const reviews = document.querySelectorAll('#reviews-list .review-item');
+    let found = 0;
+    reviews.forEach(r => {
+        const show = !q || (r.dataset.keywords||'').includes(q);
+        r.style.display = show ? '' : 'none';
+        if (show) found++;
+    });
+    document.getElementById('no-reviews-msg').style.display = found === 0 ? 'block' : 'none';
+}
+
+document.addEventListener('keydown', e => {
+    const inp = document.getElementById('reviews-search-input');
+    if (e.key === 'Escape' && document.activeElement === inp) { inp.value = ''; filterReviews(''); }
+});
+
+function markHelpful(btn) {
+    if (btn.classList.contains('voted')) { showToast('Already voted.', 'warning'); return; }
+    btn.classList.add('voted');
+    const n = parseInt(btn.textContent.match(/\d+/)?.[0]) || 0;
+    btn.textContent = `👍 Helpful (${n + 1})`;
+    showToast('Thanks for your feedback!', 'success');
+}
+
+/* ── Star rating for review form ── */
+let currentReviewRating = 0;
+const ratingLabels = ['', 'Very bad 😞', 'Bad 😕', 'Average 😐', 'Good 😊', 'Excellent 🤩'];
+
+function setReviewRating(v)   { currentReviewRating = v; updateStarDisplay(v); document.getElementById('rating-hint').textContent = ratingLabels[v]; checkReviewReady(); }
+function hoverReviewRating(v) { updateStarDisplay(v); }
+function resetReviewRating()  { updateStarDisplay(currentReviewRating); }
+function updateStarDisplay(v) {
+    document.querySelectorAll('.star-btn').forEach(s => s.classList.toggle('active', parseInt(s.dataset.value) <= v));
+}
+
+function onReviewInput() {
+    const len = document.getElementById('review-textarea').value.length;
+    const c   = document.getElementById('char-counter');
+    c.textContent = `${len} / 300`;
+    c.classList.toggle('warn', len > 250);
+    checkReviewReady();
+}
+
+function checkReviewReady() {
+    const text  = document.getElementById('review-textarea').value.trim();
+    const btn   = document.getElementById('submit-review-btn');
+    const ready = currentReviewRating > 0 && text.length >= 10;
+    btn.disabled     = !ready;
+    btn.style.opacity = ready ? '1' : '0.5';
+}
+
+function submitReview() {
+    const text = document.getElementById('review-textarea').value.trim();
+    if (!text || currentReviewRating === 0 || text.length < 10) return;
+    const btn  = document.getElementById('submit-review-btn');
+    btn.textContent = 'Sending…'; btn.disabled = true;
+
+    setTimeout(() => {
+        const container = document.getElementById('reviews-list');
+        const today     = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        const stars     = '★'.repeat(currentReviewRating) + '☆'.repeat(5 - currentReviewRating);
+        const el        = document.createElement('div');
+        el.className    = 'review-item';
+        el.dataset.keywords = text.toLowerCase();
+        el.innerHTML = `
+            <div class="review-header">
+                <div class="review-author-info">
+                    <div class="review-avatar" style="background:#e0f2fe;color:#0369a1">Y</div>
+                    <span class="review-author">You</span>
+                    <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#16a34a;margin-left:8px">New</span>
+                </div>
+                <span class="review-stars">${stars} ${currentReviewRating}.0</span>
+            </div>
+            <p class="review-text">"${escHtml(text)}"</p>
+            <div class="review-footer">
+                <div class="review-meta">Today · ${today}</div>
+                <button class="btn-helpful" onclick="this.closest('.review-item').remove();showToast('Review deleted.','info');">🗑 Delete</button>
+            </div>
+        `;
+        el.style.opacity    = '0';
+        el.style.transition = 'opacity .4s';
+        container.prepend(el);
+        requestAnimationFrame(() => requestAnimationFrame(() => el.style.opacity = '1'));
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        document.getElementById('review-textarea').value = '';
+        document.getElementById('char-counter').textContent = '0 / 300';
+        currentReviewRating = 0; updateStarDisplay(0);
+        document.getElementById('rating-hint').textContent = 'Select a rating';
+        btn.textContent = 'Submit Review'; btn.disabled = true; btn.style.opacity = '.5';
+        showToast('Review submitted!', 'success');
+    }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   13. MESSAGES — POST /send_message.php  GET /get_messages.php
+       Conversations stored in-memory; messages persisted to DB
+═══════════════════════════════════════════════════════════════ */
+
+/*
+  Expected DB columns (based on your send_message.php / get_messages.php):
+    messages: id, sender_id, receiver_id, ride_id, message, created_at, seen
+
+  get_messages.php  → GET  ?sender_id=&receiver_id=&ride_id=
+                         returns [{id, sender_id, receiver_id, ride_id, message, created_at, seen}]
+
+  send_message.php  → POST JSON {sender_id, receiver_id, ride_id, message}
+                         returns {success: true/false}
+
+  mark_seen.php     → POST JSON {sender_id, receiver_id, ride_id}
+                         marks messages as seen
+*/
+
+   // [{driverId, driverName, rideId, messages:[]}]
+
+let currentChat = null;
+let chatInterval = null;
+
+// LOAD CONVERSATIONS
+async function initMessagesTab(){
+
+    const list = document.getElementById("conversations-list");
+
+    if(!list) return;
+
+    list.innerHTML = `<div class="chat-loading">Loading...</div>`;
+
+    try{
+        const res = await fetch(`${BASE}/get_user_conversations.php?user_id=${userLocal.id}`);
+
+        if(!res.ok){
+            throw new Error("Server error");
+        }
+
+        const data = await res.json();
+
+        list.innerHTML = "";
+
+        // safety check
+        if(!Array.isArray(data) || data.length === 0){
+            list.innerHTML = `<div class="conv-empty">No conversations yet.</div>`;
+            return;
+        }
+
+        data.forEach(conv => {
+
+            const name = conv.name || "User";
+            const firstLetter = name.charAt(0).toUpperCase();
+
+            const div = document.createElement("div");
+            div.className = "conv-item";
+
+            div.onclick = () => openConversation(
+                conv.other_id,
+                name,
+                conv.ride_id
+            );
+
+            div.innerHTML = `
+                <div class="conv-avatar">${firstLetter}</div>
+                <div class="conv-info">
+                    <div class="conv-name">${name}</div>
+                    <div class="conv-preview">${conv.last_message || ""}</div>
+                </div>
+                <div class="conv-time">${conv.time || ""}</div>
+            `;
+
+            list.appendChild(div);
         });
 
-    } catch (err) {
-        console.error(err);
-        alert("Error loading rides ❌");
+    }catch(e){
+        console.error(e);
+        list.innerHTML = `<div class="conv-empty">Error loading messages</div>`;
     }
 }
+// OPEN CHAT
+function openConversation(driverId, driverName, rideId){
 
-// ================= BOOKINGS =================
-async function loadBookings() {
-    const res = await fetch(`http://localhost/find_ride/backend/get_bookings.php?user_id=${userLocal.id}`);
-    const bookings = await res.json();
 
-    let container = document.getElementById("bookingsContainer");
-    container.innerHTML = "";
+currentChat = {driverId, rideId};
 
-    bookings.forEach(b => {
-        container.innerHTML += `
-        <div class="ride-card">
-            <h3>${b.departure} → ${b.destination}</h3>
-            <p>${b.date}</p>
-        </div>`;
-    });
+document.getElementById("chat-placeholder").style.display = "none";
+document.getElementById("active-chat").style.display = "flex";
+
+document.getElementById("chat-header-name").textContent = driverName;
+document.getElementById("chat-header-avatar").textContent = driverName[0];
+document.getElementById("chat-header-sub").textContent = "Ride #" + rideId;
+
+loadMessages(driverId, rideId);
+
+if(chatInterval) clearInterval(chatInterval);
+chatInterval = setInterval(() => loadMessages(driverId, rideId), 2000);
+
+
 }
 
-/*================= REVIEWS =================
-async function loadReviews() {
-    const res = await fetch(`http://localhost/find_ride/backend/get_reviews.php?user_id=${userLocal.id}`);
-    const reviews = await res.json();
+// LOAD MESSAGES
+async function loadMessages(driverId, rideId){
 
-    let container = document.getElementById("reviewsContainer");
-    container.innerHTML = "";
+    const res = await fetch(
+        `${BASE}/get_messages.php?ride_id=${rideId}&user1=${userLocal.id}&user2=${driverId}`
+    );
 
-    reviews.forEach(r => {
-        container.innerHTML += `
-        <div class="review-item">
-            <strong>${r.author}</strong>
-            <p>${r.comment}</p>
-        </div>`;
+    const data = await res.json();
+
+    const box = document.getElementById("chat-messages");
+    box.innerHTML = "";
+
+    data.forEach(m => {
+
+        const div = document.createElement("div");
+
+        div.className = "chat-msg " + (m.sender_id == userLocal.id ? "mine" : "theirs");
+
+        div.innerHTML = `
+            ${m.message}
+            <div class="chat-msg-time">${m.created_at || ""}</div>
+        `;
+
+        box.appendChild(div);
     });
+
+    box.scrollTop = box.scrollHeight;
 }
-    */
 
-/*================= EDIT =================
-async function editProfile() {
-    const firstName = prompt("First name:");
-    const lastName = prompt("Last name:");
+// SEND MESSAGE
+async function sendMessage(){
 
+    const input = document.getElementById("chat-input");
+    const text = input.value.trim();
 
-    if (!firstName || !lastName) return;
+    if(!text || !currentChat) return;
 
-    await fetch("http://localhost/find_ride/backend/update_user.php", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            id: userLocal.id,
-            firstName,
-            lastName
+    await fetch(`${BASE}/send_message.php`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            sender_id:userLocal.id,
+            receiver_id:currentChat.driverId,
+            ride_id:currentChat.rideId,
+            message:text
         })
     });
 
-    location.reload();
-}
-/*/
+    input.value = "";
 
-// ================= LOGOUT =================
-function logout() {
-    localStorage.removeItem("user");
-    window.location.href = "login.html";
+    loadMessages(currentChat.driverId, currentChat.rideId);
 }
-//================= NAVBAR EFFECT ================= 
-window.addEventListener("scroll", () => {
-    let navbar = document.querySelector(".navbar");
 
-    if (window.scrollY > 50) {
-        navbar.classList.add("scrolled");
-    } else {
-        navbar.classList.remove("scrolled");
-    }
+
+
+// AUTO OPEN FROM FIND_RIDE
+window.addEventListener("load", () => {
+
+initMessagesTab();
+
+const driverId = localStorage.getItem("chat_driver_id");
+const driverName = localStorage.getItem("chat_driver_name");
+const rideId = localStorage.getItem("chat_ride_id");
+
+if(driverId && rideId){
+
+    document.getElementById("messages-tab-btn").click();
+
+    setTimeout(() => {
+        openConversation(driverId, driverName, rideId);
+    }, 300);
+
+    localStorage.removeItem("chat_driver_id");
+    localStorage.removeItem("chat_driver_name");
+    localStorage.removeItem("chat_ride_id");
+}
+
+
 });
 
-// ================= INIT =================
-loadUser();
-loadStats();
-loadRides();
-loadBookings();
-//loadReviews();
+
+/* ═══════════════════════════════════════════════════════════════
+   14. LOGOUT
+═══════════════════════════════════════════════════════════════ */
+function logout() {
+    if (pollTimer) clearInterval(pollTimer);
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   15. UTILITIES
+═══════════════════════════════════════════════════════════════ */
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function escAttr(str) {
+    return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   16. INIT
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+    // Hide edit buttons by default
+    document.querySelectorAll('.btn-field-edit').forEach(b => b.style.display = 'none');
+
+    // Load all data
+    loadUser();
+    loadStats();
+    loadRides();
+    loadBookings();
+    loadReviews();
 
 
-
-
+    // Deep-link: if URL hash is #messages, switch directly to messages tab
+    if (window.location.hash === '#messages') {
+        const msgsBtn = document.getElementById('messages-tab-btn');
+        switchTab('messages', msgsBtn);
+    }
+});
 </script>
-
 </body>
 </html>
