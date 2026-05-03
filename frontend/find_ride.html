@@ -162,7 +162,7 @@
 <!-- SCRIPT -->
 
 <script>
-
+const currentUser = JSON.parse(localStorage.getItem("user") || "null");
 // NAVBAR EFFECT
 window.addEventListener("scroll", () => {
     let navbar = document.querySelector(".navbar");
@@ -270,15 +270,24 @@ container.innerHTML += `
 
 <div class="ride-actions">
 
-<button class="btn-book" onclick="bookRide(${ride.id}, this)">
-Accept Ride ✅
-</button>
+${ride.user_id != currentUser?.id
+? `
+    <button class="btn-book" onclick="bookRide(${ride.id}, this)">
+        Accept Ride ✅
+    </button>
 
-<button class="btn-message" onclick="openChat(${ride.user_id}, '${ride.first_name} ${ride.last_name}', ${ride.id})">
-Message 💬
-</button>
+    <button class="btn-message" onclick="openChat(${ride.user_id}, '${ride.first_name} ${ride.last_name}', ${ride.id})">
+        Message 💬
+    </button>
+  `
+: `
+    <span style="color:gray;">Your ride</span>
+  `
+}
 
 </div>
+
+
 
 </div>
 `;

@@ -1,6 +1,5 @@
 <?php
-// ❌ ما تحط حتى space قبل هذا
-
+//
 mysqli_report(MYSQLI_REPORT_OFF);
 
 $host = "127.0.0.1";

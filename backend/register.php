@@ -1,12 +1,6 @@
 <?php
-// 🔥 منع أي output قبل JSON
 ob_start();
-
 header("Content-Type: application/json");
-
-// 🔥 debug (تنجم تنحيه بعد ما يكمل يخدم)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 // 🔗 connect DB
 include "connect.php";

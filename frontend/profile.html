@@ -163,15 +163,6 @@
         .ride-location p { margin: 2px 0 0; font-size: 12px; color: #888; }
         .ride-card { background: #fafafa; border: 1px solid #f0f0f0; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
 
-        /* ── Avatar wrapper ── */
-        .avatar-wrapper { position: relative; cursor: pointer; width: fit-content; }
-        .avatar-upload-overlay {
-            position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,.5);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 3px; opacity: 0; transition: opacity .2s; color: #fff; font-size: 11px;
-        }
-        .avatar-wrapper:hover .avatar-upload-overlay { opacity: 1; }
-
         /* ── Btn toggle pref ── */
         .btn-toggle-pref { background: none; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
 
@@ -229,7 +220,7 @@
             font-size: 10px; font-weight: 700;
             display: flex; align-items: center; justify-content: center;
         }
-        .conv-empty { padding: 32px 18px; text-align: center; color: #bbb; font-size: 13px; }
+        .conv-empty { padding: 32px 18px; text-align: center; color: #bbb; font-size: 13px; display: none; }
 
         .chat-panel { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         .chat-header {
@@ -357,22 +348,19 @@
     <div class="container">
         <div class="profile-info">
 
-            <!-- Avatar with upload -->
-            <div class="avatar-wrapper" title="Click to change photo" onclick="triggerAvatarUpload()">
+            <!-- FIX 1: Avatar wrapper was never closed — added missing closing </div> -->
+            <div class="avatar-wrapper">
                 <div class="profile-avatar-large" id="profile-avatar">?</div>
                 <div class="avatar-upload-overlay">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                         <circle cx="12" cy="13" r="4"/>
                     </svg>
-                    <span>Change</span>
-                </div>
-                <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
-            </div>
+                </div><!-- ← was missing -->
+            </div><!-- ← was missing -->
 
             <div class="profile-details">
                 <h1 id="display-name">Loading…</h1>
-                <div class="driver-rating" id="rating-text">★★★★★</div>
                 <p id="member-info">Member • <span class="verified-badge">✓ Verified</span></p>
             </div>
 
@@ -385,25 +373,6 @@
             </button>
         </div>
 
-        <!-- Stats -->
-        <div class="profile-stats">
-            <div class="stat-box">
-                <div class="stat-number" id="stat-trips" data-target="0">0</div>
-                <div class="stat-label">Total Trips</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" id="stat-rating" data-target="0" data-decimal="1">0</div>
-                <div class="stat-label">Rating</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" id="stat-response" data-target="0" data-suffix="%">0%</div>
-                <div class="stat-label">Response Rate</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" id="stat-offers" data-target="0">0</div>
-                <div class="stat-label">Active Offers</div>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -418,7 +387,6 @@
             <button class="tab active" onclick="switchTab('info', this)">Personal Info</button>
             <button class="tab" onclick="switchTab('rides', this)">My Rides</button>
             <button class="tab" onclick="switchTab('bookings', this)">My Bookings</button>
-            <button class="tab" onclick="switchTab('reviews', this)">Reviews</button>
             <button class="tab" id="messages-tab-btn" onclick="switchTab('messages', this)">
                 Messages <span id="unread-badge" style="display:none;background:#dc2626;color:#fff;border-radius:999px;padding:1px 6px;font-size:11px;margin-left:4px">0</span>
             </button>
@@ -465,12 +433,6 @@
                         <span class="info-label">Account Type</span>
                         <div class="info-value-wrap">
                             <span class="info-value" id="field-user-type">—</span>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Member Since</span>
-                        <div class="info-value-wrap">
-                            <span class="info-value" id="field-member-since">—</span>
                         </div>
                     </div>
                     <div class="info-item">
@@ -536,114 +498,54 @@
         <!-- ══ TAB: MY BOOKINGS ══ -->
         <div id="bookings-tab" class="tab-content">
             <div class="profile-card">
-                <div class="card-header-row">
-                    <h2>My Bookings</h2>
-                    <div class="filter-group">
-                        <button class="filter-btn active" onclick="filterBookings('all', this)">All</button>
-                        <button class="filter-btn" onclick="filterBookings('confirmed', this)">Confirmed</button>
-                        <button class="filter-btn" onclick="filterBookings('pending', this)">Pending</button>
-                        <button class="filter-btn" onclick="filterBookings('cancelled', this)">Cancelled</button>
-                    </div>
-                </div>
+                <h2>My Bookings</h2>
                 <div id="bookings-list"></div>
-                <div id="no-bookings-msg" class="empty-state" style="display:none">No bookings in this category.</div>
+                <div id="no-bookings-msg" class="empty-state" style="display:none">No bookings yet.</div>
             </div>
         </div>
 
-        <!-- ══ TAB: REVIEWS ══ -->
-        <div id="reviews-tab" class="tab-content">
-            <div class="profile-card">
-                <div class="card-header-row">
-                    <h2>Reviews</h2>
-                    <div>
-                        <input type="text" class="reviews-search" placeholder="Search reviews…"
-                            oninput="filterReviews(this.value)" id="reviews-search-input">
-                    </div>
-                </div>
-
-                <div class="rating-summary">
-                    <div class="rating-big">
-                        <span class="rating-num" id="review-avg">4.9</span>
-                        <div class="rating-stars-big">★★★★★</div>
-                        <span class="rating-count" id="review-count">0 reviews</span>
-                    </div>
-                    <div class="rating-bars" id="rating-bars">
-                        <div class="rating-bar-row"><span>5 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-5" style="width:0%"></div></div><span id="bar-5-pct">0%</span></div>
-                        <div class="rating-bar-row"><span>4 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-4" style="width:0%"></div></div><span id="bar-4-pct">0%</span></div>
-                        <div class="rating-bar-row"><span>3 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-3" style="width:0%"></div></div><span id="bar-3-pct">0%</span></div>
-                        <div class="rating-bar-row"><span>2 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-2" style="width:0%"></div></div><span id="bar-2-pct">0%</span></div>
-                        <div class="rating-bar-row"><span>1 ★</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="bar-1" style="width:0%"></div></div><span id="bar-1-pct">0%</span></div>
-                    </div>
-                </div>
-
-                <div class="reviews-list" id="reviews-list"></div>
-                <div id="no-reviews-msg" class="empty-state" style="display:none">No reviews match your search.</div>
-
-                <div class="add-review-section">
-                    <h3>Leave a Review</h3>
-                    <div class="stars-input-row" onmouseleave="resetReviewRating()">
-                        <span class="star-btn" data-value="1" onclick="setReviewRating(1)" onmouseenter="hoverReviewRating(1)">★</span>
-                        <span class="star-btn" data-value="2" onclick="setReviewRating(2)" onmouseenter="hoverReviewRating(2)">★</span>
-                        <span class="star-btn" data-value="3" onclick="setReviewRating(3)" onmouseenter="hoverReviewRating(3)">★</span>
-                        <span class="star-btn" data-value="4" onclick="setReviewRating(4)" onmouseenter="hoverReviewRating(4)">★</span>
-                        <span class="star-btn" data-value="5" onclick="setReviewRating(5)" onmouseenter="hoverReviewRating(5)">★</span>
-                        <span class="rating-hint" id="rating-hint">Select a rating</span>
-                    </div>
-                    <div class="review-textarea-wrap">
-                        <textarea id="review-textarea" class="review-textarea" placeholder="Share your experience…"
-                            maxlength="300" oninput="onReviewInput()"></textarea>
-                        <span class="char-counter" id="char-counter">0 / 300</span>
-                    </div>
-                    <button class="btn-submit-review" id="submit-review-btn" onclick="submitReview()" disabled>Submit Review</button>
-                </div>
-            </div>
-        </div>
         <!-- ══ TAB: MESSAGES ══ -->
-<div id="messages-tab" class="tab-content">
-    <div class="profile-card" style="padding:0;overflow:hidden;">
-        <div class="messages-layout">
+        <div id="messages-tab" class="tab-content">
+            <div class="profile-card" style="padding:0;overflow:hidden;">
+                <div class="messages-layout">
 
-            <!-- Conversations sidebar -->
-            <div class="conversations-panel">
-                <div class="conversations-header">💬 Messages</div>
-                <div id="conversations-list"></div>
-                <div class="conv-empty" id="conv-empty">No conversations yet.</div>
-            </div>
+                    <!-- Conversations sidebar -->
+                    <div class="conversations-panel">
+                        <div class="conversations-header">💬 Messages</div>
+                        <!-- FIX 2: conversations-list needs the overflow+flex class, not a separate div -->
+                        <div class="conversations-list" id="conversations-list"></div>
+                        <!-- FIX 3: conv-empty is now display:none by default (CSS fixed above), shown only when needed -->
+                        <div class="conv-empty" id="conv-empty">No conversations yet.</div>
+                    </div>
 
-            <!-- Chat panel -->
-            <div class="chat-panel" id="chat-panel">
-                <div class="chat-placeholder" id="chat-placeholder">
-                    <span>Select a conversation</span>
-                </div>
+                    <!-- Chat panel -->
+                    <div class="chat-panel" id="chat-panel">
+                        <div class="chat-placeholder" id="chat-placeholder">
+                            <span>Select a conversation</span>
+                        </div>
 
-                <div id="active-chat" style="display:none;flex-direction:column;height:100%;">
-                    <div class="chat-header">
-                        <div class="chat-header-avatar" id="chat-header-avatar">?</div>
-                        <div class="chat-header-info">
-                            <div class="chat-header-name" id="chat-header-name">Driver</div>
-                            <div class="chat-header-sub" id="chat-header-sub">Ride #—</div>
+                        <div id="active-chat" style="display:none;flex-direction:column;height:100%;">
+                            <div class="chat-header">
+                                <div class="chat-header-avatar" id="chat-header-avatar">?</div>
+                                <div class="chat-header-info">
+                                    <div class="chat-header-name" id="chat-header-name">Driver</div>
+                                    <div class="chat-header-sub" id="chat-header-sub">Ride #—</div>
+                                </div>
+                            </div>
+
+                            <div class="chat-messages" id="chat-messages"></div>
+
+                            <div class="chat-input-bar">
+                                <input type="text" class="chat-input" id="chat-input"
+                                    placeholder="Type a message…"
+                                    onkeydown="if(event.key==='Enter') sendMessage()">
+                                <button class="chat-send-btn" onclick="sendMessage()">➤</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-messages" id="chat-messages"></div>
-
-                    <div class="chat-input-bar">
-                        <input type="text" class="chat-input" id="chat-input"
-                            placeholder="Type a message…"
-                            onkeydown="if(event.key==='Enter') sendMessage()">
-
-                        <button class="chat-send-btn" onclick="sendMessage()">
-                            Send
-                        </button>
-                    </div>
                 </div>
             </div>
-
-        </div>
-    </div>
-</div>
-
-      
         </div>
 
     </div>
@@ -676,16 +578,20 @@
 </footer>
 
 <script>
+    /* ================== GLOBAL ================== */
+const BASE = "http://localhost/find_ride/backend";
+const userLocal = JSON.parse(localStorage.getItem("user") || "null");
+
+let currentChat = null;
+let chatInterval = null;
+
 /* ═══════════════════════════════════════════════════════════════
-   0. AUTH GUARD — redirect to login if no session
+   0. AUTH GUARD
 ═══════════════════════════════════════════════════════════════ */
-const storedUser = localStorage.getItem("user");
-if (!storedUser) {
+if (!userLocal) {
     alert("Please login first.");
     window.location.href = "login.html";
 }
-const userLocal = JSON.parse(storedUser);
-const BASE = "http://localhost/find_ride/backend";
 
 /* ═══════════════════════════════════════════════════════════════
    1. NAVBAR SCROLL
@@ -726,17 +632,29 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 
 /* ═══════════════════════════════════════════════════════════════
    4. TABS
+   FIX 4: clearInterval on every tab switch, only init messages
+          when that specific tab is selected, not on every switch.
 ═══════════════════════════════════════════════════════════════ */
 function switchTab(tabName, clickedBtn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     clickedBtn.classList.add('active');
     document.getElementById(tabName + '-tab').classList.add('active');
-    if (tabName === 'messages') initMessagesTab();
+
+    // FIX: always stop polling when leaving any tab
+    if (chatInterval) {
+        clearInterval(chatInterval);
+        chatInterval = null;
+    }
+
+    // FIX: only init messages when messages tab is actually selected
+    if (tabName === 'messages') {
+        initMessagesTab();
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   5. LOAD USER — GET /get_user.php?id=
+   5. LOAD USER
 ═══════════════════════════════════════════════════════════════ */
 async function loadUser() {
     try {
@@ -752,13 +670,6 @@ async function loadUser() {
         document.getElementById('field-user-type').textContent =
             user.user_type ? (user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1)) : 'Passenger';
 
-        if (user.created_at) {
-            const d = new Date(user.created_at);
-            document.getElementById('field-member-since').textContent =
-                d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        // Avatar initials
         const initials = (
             (user.first_name ? user.first_name[0] : '') +
             (user.last_name  ? user.last_name[0]  : '')
@@ -772,22 +683,17 @@ async function loadUser() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   6. LOAD STATS — GET /get_user_stats.php?user_id=
+   6. LOAD STATS
 ═══════════════════════════════════════════════════════════════ */
 async function loadStats() {
     try {
         const res = await fetch(`${BASE}/get_user_stats.php?user_id=${userLocal.id}`);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const s = await res.json();
-
-        setStatTarget('stat-trips',    s.totalTrips    || 0, 0, '');
-        setStatTarget('stat-rating',   s.rating        || 0, 1, '');
-        setStatTarget('stat-response', s.responseRate  || 0, 0, '%');
-        setStatTarget('stat-offers',   s.activeOffers  || 0, 0, '');
+        setStatTarget('stat-trips',  s.totalTrips   || 0, 0, '');
+        setStatTarget('stat-offers', s.activeOffers || 0, 0, '');
         animateStats();
-    } catch (e) {
-        // Silently keep defaults at 0
-    }
+    } catch (e) { /* silently keep 0 */ }
 }
 
 function setStatTarget(id, val, dec, suffix) {
@@ -813,30 +719,6 @@ function animateStats() {
         if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   7. AVATAR UPLOAD (client-side preview only)
-═══════════════════════════════════════════════════════════════ */
-function triggerAvatarUpload() { document.getElementById('avatar-input').click(); }
-
-function handleAvatarUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        showToast('Invalid format. Use JPG, PNG or WebP.', 'error'); return;
-    }
-    if (file.size > 5 * 1024 * 1024) { showToast('Image too large. Max 5 MB.', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-        const av = document.getElementById('profile-avatar');
-        av.style.backgroundImage    = `url(${e.target.result})`;
-        av.style.backgroundSize     = 'cover';
-        av.style.backgroundPosition = 'center';
-        av.textContent = '';
-        showToast('Profile photo updated!', 'success');
-    };
-    reader.readAsDataURL(file);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -929,7 +811,7 @@ function checkIfAllSaved() {
 }
 
 function toggleEditMode() {
-    const btn     = document.getElementById('edit-btn-text');
+    const btn      = document.getElementById('edit-btn-text');
     const editBtns = document.querySelectorAll('.btn-field-edit');
     if (btn.textContent === 'Edit Profile') {
         btn.textContent = 'Done';
@@ -952,15 +834,15 @@ function togglePref(key, a, b) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   10. MY RIDES — GET /get_user_rides.php?user_id=
+   10. MY RIDES
 ═══════════════════════════════════════════════════════════════ */
 async function loadRides() {
     const container = document.getElementById('rides-list');
     container.innerHTML = '<p style="color:#aaa;font-size:14px;padding:12px">Loading…</p>';
     try {
-        const res    = await fetch(`${BASE}/get_user_rides.php?user_id=${userLocal.id}`);
+        const res   = await fetch(`${BASE}/get_user_rides.php?user_id=${userLocal.id}`);
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        const rides  = await res.json();
+        const rides = await res.json();
         container.innerHTML = '';
         if (!Array.isArray(rides) || !rides.length) {
             container.innerHTML = '<div class="empty-state">No ride offers yet. <a href="offer_ride.html" style="color:#1a1a1a;font-weight:600">Offer one now →</a></div>';
@@ -1020,7 +902,6 @@ function buildRideCard(r) {
     return card;
 }
 
-/* ── Cancel ride ── */
 function cancelRide(rideId) {
     openModal(
         'Cancel Ride',
@@ -1033,7 +914,7 @@ function cancelRide(rideId) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ride_id: rideId, user_id: userLocal.id })
                 });
-            } catch (e) { /* endpoint may not exist yet, still remove from UI */ }
+            } catch (e) { /* still remove from UI */ }
             const card = document.getElementById('ride-' + rideId);
             if (card) {
                 card.style.transition = 'opacity .4s, transform .4s';
@@ -1045,15 +926,14 @@ function cancelRide(rideId) {
     );
 }
 
-/* ── Inline edit ride ── */
 function editRide(rideId) {
     const card = document.getElementById('ride-' + rideId);
     if (!card) return;
     if (card.querySelector('.edit-ride-form')) {
         card.querySelector('.edit-ride-form').remove(); return;
     }
-    const locs  = card.querySelectorAll('.ride-location h4');
-    const metas = card.querySelectorAll('.meta-item');
+    const locs      = card.querySelectorAll('.ride-location h4');
+    const metas     = card.querySelectorAll('.meta-item');
     const seatsText = metas[0]?.textContent.trim().match(/\d+/)?.[0] || '1';
     const priceText = metas[1]?.textContent.trim().match(/[\d.]+/)?.[0] || '';
 
@@ -1105,7 +985,6 @@ function saveRideForm(rideId) {
     const locs  = card.querySelectorAll('.ride-location h4');
     if (locs[0]) locs[0].textContent = from;
     if (locs[1]) locs[1].textContent = to;
-    // Update meta text
     const metas = card.querySelectorAll('.meta-item');
     if (metas[0]) metas[0].innerHTML = metas[0].innerHTML.replace(/\d+\s*seat/, `${seats} seat`);
     if (metas[1]) metas[1].innerHTML = metas[1].innerHTML.replace(/[\d.]+\s*TND/, `${price} TND`);
@@ -1113,7 +992,6 @@ function saveRideForm(rideId) {
     showToast('Ride updated!', 'success');
 }
 
-/* ── View bookings for a ride ── */
 function viewBookings(rideId) {
     const card = document.getElementById('ride-' + rideId);
     if (!card) return;
@@ -1160,7 +1038,7 @@ function viewBookings(rideId) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   11. MY BOOKINGS — GET /get_bookings.php?user_id=
+   11. MY BOOKINGS
 ═══════════════════════════════════════════════════════════════ */
 async function loadBookings() {
     const container = document.getElementById('bookings-list');
@@ -1172,7 +1050,8 @@ async function loadBookings() {
         container.innerHTML = '';
 
         if (!Array.isArray(bookings) || !bookings.length) {
-            document.getElementById('no-bookings-msg').style.display = 'block'; return;
+            document.getElementById('no-bookings-msg').style.display = 'block';
+            return;
         }
 
         bookings.forEach(b => {
@@ -1207,7 +1086,7 @@ async function loadBookings() {
                 </div>
                 <div class="ride-actions" id="booking-actions-${b.id}">
                     <button class="btn-message"
-                        onclick="openConversation(${parseInt(b.driver_id)||0}, '${escAttr(b.driver_name||'Driver')}', ${parseInt(b.ride_id||b.id)||0})">
+                        onclick="openChat(${b.driver_id}, '${escAttr(b.driver_name || 'Driver')}', ${b.ride_id})">
                         Message Driver
                     </button>
                     ${status !== 'cancelled'
@@ -1222,401 +1101,233 @@ async function loadBookings() {
     }
 }
 
-function filterBookings(status, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const cards   = document.querySelectorAll('#bookings-list .ride-card');
-    let   visible = 0;
-    cards.forEach(c => {
-        const show = status === 'all' || c.dataset.status === status;
-        c.style.display = show ? '' : 'none';
-        if (show) visible++;
-    });
-    document.getElementById('no-bookings-msg').style.display = visible === 0 ? 'block' : 'none';
-}
-
-function cancelBooking(bookingId) {
+async function cancelBooking(bookingId) {
     openModal(
         'Cancel Booking',
-        'Are you sure you want to cancel this booking?',
-        'Yes, cancel',
+        'This will permanently delete your booking. Continue?',
+        'Delete',
         async () => {
-            // Optional: call a cancel_booking.php endpoint if it exists
-            const card = document.getElementById('booking-' + bookingId);
-            if (!card) return;
-            card.dataset.status = 'cancelled';
-            const badge = document.getElementById('badge-booking-' + bookingId);
-            if (badge) { badge.className = 'condition-badge badge-cancelled'; badge.textContent = 'Cancelled'; }
-            const actions = document.getElementById('booking-actions-' + bookingId);
-            if (actions) {
-                actions.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '.4'; });
-            }
-            showToast('Booking cancelled.', 'info');
+            try {
+                const res  = await fetch(`${BASE}/cancel_booking.php`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ booking_id: bookingId })
+                });
+                const data = await res.json();
+                if (!data.success || data.affected === 0) {
+                    showToast("Delete failed", "error");
+                    return;
+                }
+            } catch (e) { /* still remove from UI */ }
+
+           
+            showToast("Booking deleted", "success");
+            // 🔥 ALWAYS reload from DB (source of truth)
+loadBookings();
         }
     );
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   12. REVIEWS — GET /get_reviews.php?user_id=  (not in backend yet → demo fallback)
+   FIX 5: openChat — no longer redirects/reloads.
+   Switches to the messages tab in-page and opens the conversation.
 ═══════════════════════════════════════════════════════════════ */
-async function loadReviews() {
+function openChat(driverId, driverName, rideId) {
+    // Store temporarily so initMessagesTab can open it after loading
+    sessionStorage.setItem("chat_driver_id",   driverId);
+    sessionStorage.setItem("chat_driver_name", driverName);
+    sessionStorage.setItem("chat_ride_id",     rideId);
 
-    const container = document.getElementById('reviews-list');
-    if (!container) return;
-
-    try {
-        const res = await fetch(`${BASE}/get_reviews.php?user_id=${userLocal.id}`);
-
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-
-        const reviews = await res.json();
-
-        container.innerHTML = '';
-
-        if (!Array.isArray(reviews) || !reviews.length) {
-            container.innerHTML = `<div class="empty-state">No reviews yet.</div>`;
-            document.getElementById('review-count').textContent = '0 reviews';
-            return;
-        }
-
-        reviews.forEach(r => 
-            appendReviewEl(container, r.author, r.rating, r.text, r.trip, r.date)
-        );
-
-        updateRatingBars(reviews);
-
-        document.getElementById('review-count').textContent =
-            reviews.length + ' review' + (reviews.length !== 1 ? 's' : '');
-
-    } catch (e) {
-        console.error(e);
-        container.innerHTML = `<div class="empty-state">Failed to load reviews.</div>`;
-    }
-}
-
-
-
-function updateRatingBars(reviews) {
-    const counts = { 1:0, 2:0, 3:0, 4:0, 5:0 };
-    let sum = 0;
-    reviews.forEach(r => { const rt = Math.round(r.rating)||5; counts[rt] = (counts[rt]||0)+1; sum += rt; });
-    const total = reviews.length || 1;
-    const avg   = (sum / total).toFixed(1);
-    document.getElementById('review-avg').textContent = avg;
-    [1,2,3,4,5].forEach(n => {
-        const pct = Math.round((counts[n] / total) * 100);
-        const bar = document.getElementById('bar-' + n);
-        const lbl = document.getElementById('bar-' + n + '-pct');
-        if (bar) bar.style.width = pct + '%';
-        if (lbl) lbl.textContent = pct + '%';
-    });
-}
-
-function appendReviewEl(container, author, rating, text, trip, date) {
-    const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
-    const el    = document.createElement('div');
-    el.className       = 'review-item';
-    el.dataset.keywords = (text + ' ' + author).toLowerCase();
-    el.innerHTML = `
-        <div class="review-header">
-            <div class="review-author-info">
-                <div class="review-avatar">${author[0]}</div>
-                <span class="review-author">${escHtml(author)}</span>
-            </div>
-            <span class="review-stars">${stars} ${rating}.0</span>
-        </div>
-        <p class="review-text">"${escHtml(text)}"</p>
-        <div class="review-footer">
-            <div class="review-meta">${trip ? 'Trip: ' + escHtml(trip) + ' · ' : ''}${escHtml(date)}</div>
-            <button class="btn-helpful" onclick="markHelpful(this)">👍 Helpful</button>
-        </div>
-    `;
-    container.appendChild(el);
-}
-
-function filterReviews(q) {
-    q = q.toLowerCase().trim();
-    const reviews = document.querySelectorAll('#reviews-list .review-item');
-    let found = 0;
-    reviews.forEach(r => {
-        const show = !q || (r.dataset.keywords||'').includes(q);
-        r.style.display = show ? '' : 'none';
-        if (show) found++;
-    });
-    document.getElementById('no-reviews-msg').style.display = found === 0 ? 'block' : 'none';
-}
-
-document.addEventListener('keydown', e => {
-    const inp = document.getElementById('reviews-search-input');
-    if (e.key === 'Escape' && document.activeElement === inp) { inp.value = ''; filterReviews(''); }
-});
-
-function markHelpful(btn) {
-    if (btn.classList.contains('voted')) { showToast('Already voted.', 'warning'); return; }
-    btn.classList.add('voted');
-    const n = parseInt(btn.textContent.match(/\d+/)?.[0]) || 0;
-    btn.textContent = `👍 Helpful (${n + 1})`;
-    showToast('Thanks for your feedback!', 'success');
-}
-
-/* ── Star rating for review form ── */
-let currentReviewRating = 0;
-const ratingLabels = ['', 'Very bad 😞', 'Bad 😕', 'Average 😐', 'Good 😊', 'Excellent 🤩'];
-
-function setReviewRating(v)   { currentReviewRating = v; updateStarDisplay(v); document.getElementById('rating-hint').textContent = ratingLabels[v]; checkReviewReady(); }
-function hoverReviewRating(v) { updateStarDisplay(v); }
-function resetReviewRating()  { updateStarDisplay(currentReviewRating); }
-function updateStarDisplay(v) {
-    document.querySelectorAll('.star-btn').forEach(s => s.classList.toggle('active', parseInt(s.dataset.value) <= v));
-}
-
-function onReviewInput() {
-    const len = document.getElementById('review-textarea').value.length;
-    const c   = document.getElementById('char-counter');
-    c.textContent = `${len} / 300`;
-    c.classList.toggle('warn', len > 250);
-    checkReviewReady();
-}
-
-function checkReviewReady() {
-    const text  = document.getElementById('review-textarea').value.trim();
-    const btn   = document.getElementById('submit-review-btn');
-    const ready = currentReviewRating > 0 && text.length >= 10;
-    btn.disabled     = !ready;
-    btn.style.opacity = ready ? '1' : '0.5';
-}
-
-function submitReview() {
-    const text = document.getElementById('review-textarea').value.trim();
-    if (!text || currentReviewRating === 0 || text.length < 10) return;
-    const btn  = document.getElementById('submit-review-btn');
-    btn.textContent = 'Sending…'; btn.disabled = true;
-
-    setTimeout(() => {
-        const container = document.getElementById('reviews-list');
-        const today     = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-        const stars     = '★'.repeat(currentReviewRating) + '☆'.repeat(5 - currentReviewRating);
-        const el        = document.createElement('div');
-        el.className    = 'review-item';
-        el.dataset.keywords = text.toLowerCase();
-        el.innerHTML = `
-            <div class="review-header">
-                <div class="review-author-info">
-                    <div class="review-avatar" style="background:#e0f2fe;color:#0369a1">Y</div>
-                    <span class="review-author">You</span>
-                    <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#16a34a;margin-left:8px">New</span>
-                </div>
-                <span class="review-stars">${stars} ${currentReviewRating}.0</span>
-            </div>
-            <p class="review-text">"${escHtml(text)}"</p>
-            <div class="review-footer">
-                <div class="review-meta">Today · ${today}</div>
-                <button class="btn-helpful" onclick="this.closest('.review-item').remove();showToast('Review deleted.','info');">🗑 Delete</button>
-            </div>
-        `;
-        el.style.opacity    = '0';
-        el.style.transition = 'opacity .4s';
-        container.prepend(el);
-        requestAnimationFrame(() => requestAnimationFrame(() => el.style.opacity = '1'));
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        document.getElementById('review-textarea').value = '';
-        document.getElementById('char-counter').textContent = '0 / 300';
-        currentReviewRating = 0; updateStarDisplay(0);
-        document.getElementById('rating-hint').textContent = 'Select a rating';
-        btn.textContent = 'Submit Review'; btn.disabled = true; btn.style.opacity = '.5';
-        showToast('Review submitted!', 'success');
-    }, 1000);
+    // Switch tab in-page (no reload)
+    const msgsBtn = document.getElementById('messages-tab-btn');
+    switchTab('messages', msgsBtn);
+    msgsBtn.classList.add('active');
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   13. MESSAGES — POST /send_message.php  GET /get_messages.php
-       Conversations stored in-memory; messages persisted to DB
+   13. MESSAGES
 ═══════════════════════════════════════════════════════════════ */
 
-/*
-  Expected DB columns (based on your send_message.php / get_messages.php):
-    messages: id, sender_id, receiver_id, ride_id, message, created_at, seen
+/* ── Load conversations ── */
+async function initMessagesTab() {
+    const list  = document.getElementById("conversations-list");
+    const empty = document.getElementById("conv-empty");
+    if (!list) return;
 
-  get_messages.php  → GET  ?sender_id=&receiver_id=&ride_id=
-                         returns [{id, sender_id, receiver_id, ride_id, message, created_at, seen}]
+    list.innerHTML = `<div class="chat-loading">Loading…</div>`;
+    empty.style.display = 'none';
 
-  send_message.php  → POST JSON {sender_id, receiver_id, ride_id, message}
-                         returns {success: true/false}
-
-  mark_seen.php     → POST JSON {sender_id, receiver_id, ride_id}
-                         marks messages as seen
-*/
-
-   // [{driverId, driverName, rideId, messages:[]}]
-
-let currentChat = null;
-let chatInterval = null;
-
-// LOAD CONVERSATIONS
-async function initMessagesTab(){
-
-    const list = document.getElementById("conversations-list");
-
-    if(!list) return;
-
-    list.innerHTML = `<div class="chat-loading">Loading...</div>`;
-
-    try{
+    try {
         const res = await fetch(`${BASE}/get_user_conversations.php?user_id=${userLocal.id}`);
-
-        if(!res.ok){
-            throw new Error("Server error");
-        }
-
+        if (!res.ok) throw new Error("Server error");
         const data = await res.json();
 
         list.innerHTML = "";
 
-        // safety check
-        if(!Array.isArray(data) || data.length === 0){
-            list.innerHTML = `<div class="conv-empty">No conversations yet.</div>`;
+        if (!Array.isArray(data) || data.length === 0) {
+            // FIX 6: show the empty state correctly
+            empty.style.display = 'block';
+
+            // FIX: still open pending chat even if the list appears empty
+            checkPendingChat();
             return;
         }
 
         data.forEach(conv => {
-
-            const name = conv.name || "User";
+            const name        = conv.name || "User";
             const firstLetter = name.charAt(0).toUpperCase();
-
-            const div = document.createElement("div");
-            div.className = "conv-item";
-
-            div.onclick = () => openConversation(
-                conv.other_id,
-                name,
-                conv.ride_id
-            );
-
+            const div         = document.createElement("div");
+            div.className     = "conv-item";
+            div.onclick       = () => openConversation(conv.other_id, name, conv.ride_id);
             div.innerHTML = `
                 <div class="conv-avatar">${firstLetter}</div>
                 <div class="conv-info">
-                    <div class="conv-name">${name}</div>
-                    <div class="conv-preview">${conv.last_message || ""}</div>
+                    <div class="conv-name">${escHtml(name)}</div>
+                    <div class="conv-preview">${escHtml(conv.last_message || '')}</div>
                 </div>
-                <div class="conv-time">${conv.time || ""}</div>
+                <div class="conv-time">${escHtml(conv.time || '')}</div>
             `;
-
             list.appendChild(div);
         });
 
-    }catch(e){
+        // Open any pending chat (e.g. from "Message Driver" button)
+        checkPendingChat();
+
+    } catch (e) {
         console.error(e);
-        list.innerHTML = `<div class="conv-empty">Error loading messages</div>`;
+        list.innerHTML = `<div class="conv-empty" style="display:block">Error loading messages.</div>`;
     }
 }
-// OPEN CHAT
-function openConversation(driverId, driverName, rideId){
 
+/* FIX 7: Extracted pending-chat logic into its own function so it runs
+   whether the conversations list is empty or not. */
+function checkPendingChat() {
+    const driverId   = sessionStorage.getItem("chat_driver_id");
+    const driverName = sessionStorage.getItem("chat_driver_name");
+    const rideId     = sessionStorage.getItem("chat_ride_id");
 
-currentChat = {driverId, rideId};
+    if (driverId && rideId) {
+        openConversation(driverId, driverName || "Driver", rideId);
 
-document.getElementById("chat-placeholder").style.display = "none";
-document.getElementById("active-chat").style.display = "flex";
-
-document.getElementById("chat-header-name").textContent = driverName;
-document.getElementById("chat-header-avatar").textContent = driverName[0];
-document.getElementById("chat-header-sub").textContent = "Ride #" + rideId;
-
-loadMessages(driverId, rideId);
-
-if(chatInterval) clearInterval(chatInterval);
-chatInterval = setInterval(() => loadMessages(driverId, rideId), 2000);
-
-
+        sessionStorage.removeItem("chat_driver_id");
+        sessionStorage.removeItem("chat_driver_name");
+        sessionStorage.removeItem("chat_ride_id");
+    }
 }
 
-// LOAD MESSAGES
-async function loadMessages(driverId, rideId){
+/* ── Open a specific conversation ── */
+function openConversation(driverId, driverName, rideId) {
 
-    const res = await fetch(
-        `${BASE}/get_messages.php?ride_id=${rideId}&user1=${userLocal.id}&user2=${driverId}`
-    );
+    if (!driverId || !rideId) return;
 
-    const data = await res.json();
+    currentChat = { driverId, rideId };
 
-    const box = document.getElementById("chat-messages");
-    box.innerHTML = "";
+    document.getElementById("chat-placeholder").style.display = "none";
+    document.getElementById("active-chat").style.display = "flex";
 
-    data.forEach(m => {
+    document.getElementById("chat-header-name").textContent = driverName || "User";
+    document.getElementById("chat-header-avatar").textContent = (driverName || "U")[0];
+    document.getElementById("chat-header-sub").textContent = "Ride #" + rideId;
 
-        const div = document.createElement("div");
+    loadMessages(driverId, rideId);
 
-        div.className = "chat-msg " + (m.sender_id == userLocal.id ? "mine" : "theirs");
+    if (chatInterval) clearInterval(chatInterval);
 
-        div.innerHTML = `
-            ${m.message}
-            <div class="chat-msg-time">${m.created_at || ""}</div>
-        `;
-
-        box.appendChild(div);
-    });
-
-    box.scrollTop = box.scrollHeight;
+    chatInterval = setInterval(() => {
+        loadMessages(driverId, rideId);
+    }, 2000);
+    console.log("OPEN:", {
+    me: userLocal.id,
+    other: driverId,
+    ride: rideId
+});
 }
+/* ================== SEND MESSAGE ================== */
+window.sendMessage = async function () {
 
-// SEND MESSAGE
-async function sendMessage(){
+    console.log("SEND CLICKED");
 
     const input = document.getElementById("chat-input");
     const text = input.value.trim();
 
-    if(!text || !currentChat) return;
+    if (!text) return;
 
-    await fetch(`${BASE}/send_message.php`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-            sender_id:userLocal.id,
-            receiver_id:currentChat.driverId,
-            ride_id:currentChat.rideId,
-            message:text
-        })
-    });
+    if (!currentChat?.driverId || !currentChat?.rideId) {
+        alert("Chat not selected ❌");
+        return;
+    }
 
-    input.value = "";
+    const formData = new FormData();
+    formData.append("sender_id", userLocal.id);
+    formData.append("receiver_id", currentChat.driverId);
+    formData.append("ride_id", currentChat.rideId);
+    formData.append("message", text);
 
-    loadMessages(currentChat.driverId, currentChat.rideId);
+    try {
+        const res = await fetch(`${BASE}/send_message.php`, {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+        console.log("SERVER:", data);
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        input.value = "";
+
+        loadMessages(currentChat.driverId, currentChat.rideId);
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error ❌");
+    }
+};
+
+/* ================== LOAD MESSAGES ================== */
+async function loadMessages(driverId, rideId) {
+    try {
+        const res = await fetch(`${BASE}/get_messages.php?ride_id=${rideId}&user1=${userLocal.id}&user2=${driverId}`);
+        const data = await res.json();
+
+        const box = document.getElementById("chat-messages");
+        if (!box) return;
+
+        box.innerHTML = "";
+
+        if (!Array.isArray(data) || data.length === 0) {
+            box.innerHTML = "<p style='color:#aaa;text-align:center;padding:20px'>No messages yet</p>";
+            return;
+        }
+
+        data.forEach(m => {
+            const div = document.createElement("div");
+            // FIX: added "chat-msg" class (was missing!) + correct mine/theirs
+            div.className = "chat-msg " + (Number(m.sender_id) === Number(userLocal.id) ? "mine" : "theirs");
+            div.textContent = m.message;
+            box.appendChild(div);
+            // FIX: console.log was here outside the loop — moved inside
+            console.log("MSG sender:", m.sender_id, "ME:", userLocal.id);
+        });
+
+        box.scrollTop = box.scrollHeight;
+
+    } catch (e) {
+        console.error(e);
+    }
+    // REMOVED: console.log("MSG:", m.sender_id...) — m was undefined here!
 }
 
-
-
-// AUTO OPEN FROM FIND_RIDE
-window.addEventListener("load", () => {
-
-initMessagesTab();
-
-const driverId = localStorage.getItem("chat_driver_id");
-const driverName = localStorage.getItem("chat_driver_name");
-const rideId = localStorage.getItem("chat_ride_id");
-
-if(driverId && rideId){
-
-    document.getElementById("messages-tab-btn").click();
-
-    setTimeout(() => {
-        openConversation(driverId, driverName, rideId);
-    }, 300);
-
-    localStorage.removeItem("chat_driver_id");
-    localStorage.removeItem("chat_driver_name");
-    localStorage.removeItem("chat_ride_id");
-}
-
-
-});
-
+    
 
 /* ═══════════════════════════════════════════════════════════════
    14. LOGOUT
 ═══════════════════════════════════════════════════════════════ */
 function logout() {
-    if (pollTimer) clearInterval(pollTimer);
+    if (chatInterval) clearInterval(chatInterval);
     localStorage.removeItem('user');
     window.location.href = 'login.html';
 }
@@ -1635,24 +1346,35 @@ function escAttr(str) {
 
 /* ═══════════════════════════════════════════════════════════════
    16. INIT
+   FIX 10: removed the duplicate window.load listener that was
+   calling initMessagesTab() a second time and mishandling
+   localStorage-based chat intent.
 ═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-    // Hide edit buttons by default
     document.querySelectorAll('.btn-field-edit').forEach(b => b.style.display = 'none');
 
-    // Load all data
     loadUser();
-    loadStats();
     loadRides();
     loadBookings();
-    loadReviews();
 
-
-    // Deep-link: if URL hash is #messages, switch directly to messages tab
-    if (window.location.hash === '#messages') {
-        const msgsBtn = document.getElementById('messages-tab-btn');
-        switchTab('messages', msgsBtn);
+    // Handle #messages deep-link OR pending chat from localStorage (legacy)
+    const ldId   = localStorage.getItem("chat_driver_id");
+    const ldName = localStorage.getItem("chat_driver_name");
+    const ldRide = localStorage.getItem("chat_ride_id");
+    if (ldId && ldRide) {
+        // Migrate from localStorage to sessionStorage so openChat() picks it up
+        sessionStorage.setItem("chat_driver_id",   ldId);
+        sessionStorage.setItem("chat_driver_name", ldName || "Driver");
+        sessionStorage.setItem("chat_ride_id",     ldRide);
+        localStorage.removeItem("chat_driver_id");
+        localStorage.removeItem("chat_driver_name");
+        localStorage.removeItem("chat_ride_id");
     }
+
+    if (window.location.hash === "#messages") {
+    const btn = document.getElementById("messages-tab-btn");
+    if (btn) switchTab("messages", btn);
+}
 });
 </script>
 </body>

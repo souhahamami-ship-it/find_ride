@@ -1,8 +1,5 @@
 <?php
 
-ob_start();
-header("Content-Type: application/json");
-
 include "connect.php";
 
 // read JSON

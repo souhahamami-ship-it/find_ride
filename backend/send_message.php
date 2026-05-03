@@ -1,20 +1,40 @@
 <?php
 include "connect.php";
 
-$data = json_decode(file_get_contents("php://input"), true);
+header("Content-Type: application/json");
 
-$sender = $data['sender_id'];
-$receiver = $data['receiver_id'];
-$ride = $data['ride_id'];
-$message = $data['message'];
+// ✅ ONLY use POST (FormData)
+$sender   = $_POST['sender_id'] ?? 0;
+$receiver = $_POST['receiver_id'] ?? 0;
+$ride     = $_POST['ride_id'] ?? 0;
+$message  = $_POST['message'] ?? '';
 
-$sql = "INSERT INTO messages (sender_id, receiver_id, ride_id, message, status)
-        VALUES (?, ?, ?, ?, 'sent')";
+// debug
+if(!$sender || !$receiver || !$ride || !$message){
+    echo json_encode([
+        "error" => "Missing data",
+        "_POST" => $_POST
+    ]);
+    exit;
+}
+
+// insert
+$sql = "INSERT INTO messages (sender_id, receiver_id, ride_id, message)
+        VALUES (?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
+
+if(!$stmt){
+    echo json_encode(["error"=>$conn->error]);
+    exit;
+}
+
 $stmt->bind_param("iiis", $sender, $receiver, $ride, $message);
 
-$stmt->execute();
+if(!$stmt->execute()){
+    echo json_encode(["error"=>$stmt->error]);
+    exit;
+}
 
-echo json_encode(["success" => true]);
+echo json_encode(["success"=>true]);
 ?>

@@ -1,21 +1,63 @@
 <?php
-header("Content-Type: application/json");
 include "connect.php";
 
-$user_id = intval($_GET['user_id']);
+header("Content-Type: application/json");
+error_reporting(0);
 
-$sql = "SELECT rides.* 
-        FROM bookings 
-        JOIN rides ON bookings.ride_id = rides.id
-        WHERE bookings.user_id = $user_id";
+$user_id = $_GET['user_id'] ?? 0;
 
-$result = $conn->query($sql);
+$sql = "
+SELECT 
+    b.id,
+    b.ride_id,
+    b.status,
 
-$bookings = [];
+    r.departure,
+    r.destination,
+    r.date,
+    r.time,
 
-while ($row = $result->fetch_assoc()) {
-    $bookings[] = $row;
+    u.id AS driver_id,
+    u.first_name,
+    u.last_name
+
+FROM bookings b
+LEFT JOIN rides r ON b.ride_id = r.id
+LEFT JOIN users u ON r.user_id = u.id
+WHERE b.user_id = ?
+ORDER BY b.id DESC
+";
+
+$stmt = $conn->prepare($sql);
+
+if(!$stmt){
+    echo json_encode(["error"=>$conn->error]);
+    exit;
 }
 
-echo json_encode($bookings);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+$data = [];
+
+while($row = $result->fetch_assoc()){
+    $data[] = [
+        "id" => $row["id"],
+        "ride_id" => $row["ride_id"],
+        "status" => $row["status"],
+
+        "departure" => $row["departure"] ?? "Unknown",
+        "destination" => $row["destination"] ?? "Unknown",
+        "date" => $row["date"] ?? "",
+        "time" => $row["time"] ?? "",
+
+        "driver_id" => $row["driver_id"] ?? 0,
+        "driver_name" => trim(($row["first_name"] ?? "") . " " . ($row["last_name"] ?? "")) ?: "Driver"
+    ];
+}
+
+echo json_encode($data);
+exit;
 ?>
