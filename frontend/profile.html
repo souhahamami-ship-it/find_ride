@@ -752,10 +752,12 @@ function editField(fieldId) {
     }
 }
 
-function saveField(fieldId) {
+async function saveField(fieldId) {
     const input = document.querySelector(`input.inline-input[data-field="${fieldId}"]`);
     if (!input) return;
     const v = input.value.trim();
+
+    // Validation
     if (!v) { showToast('Field cannot be empty.', 'error'); input.focus(); return; }
     if (fieldId === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
         showToast('Invalid email address.', 'error'); input.focus(); return;
@@ -763,15 +765,51 @@ function saveField(fieldId) {
     if (fieldId === 'phone' && !/^[\d\s\+\-\(\)]{8,}$/.test(v)) {
         showToast('Invalid phone number.', 'error'); input.focus(); return;
     }
+
+    // Replace input with span immediately (optimistic UI)
     const span = document.createElement('span');
-    span.className = 'info-value';
-    span.id        = 'field-' + fieldId;
+    span.className   = 'info-value';
+    span.id          = 'field-' + fieldId;
     span.textContent = v;
     input.replaceWith(span);
     const btn = span.closest('.info-value-wrap').querySelector('.btn-field-edit');
     if (btn) { btn.textContent = 'Edit'; btn.classList.remove('saving'); }
     if (fieldId === 'fullname') document.getElementById('display-name').textContent = v;
-    showToast('Field updated!', 'success');
+
+    // ✅ Send to server
+    try {
+        const res  = await fetch(`${BASE}/update_user.php`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                user_id: userLocal.id,
+                field:   fieldId,
+                value:   v
+            })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            showToast('Profile updated!', 'success');
+
+            // Keep localStorage in sync
+            if (fieldId === 'fullname') {
+                const parts = v.split(' ');
+                userLocal.first_name = parts[0];
+                userLocal.last_name  = parts[1] || '';
+                localStorage.setItem('user', JSON.stringify(userLocal));
+            } else if (fieldId === 'email') {
+                userLocal.email = v;
+                localStorage.setItem('user', JSON.stringify(userLocal));
+            }
+        } else {
+            showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
+        }
+    } catch (e) {
+        showToast('Server error. Changes not saved.', 'error');
+        console.error(e);
+    }
+
     checkIfAllSaved();
 }
 
@@ -794,6 +832,11 @@ function saveAllFields() {
         if (f) saveField(f);
     });
     document.getElementById('info-edit-actions').style.display = 'none';
+    if (data.success) {
+    showToast('Profile updated!', 'success');
+    // ✅ Reload fresh data from DB to sync everything
+    loadUser();
+}
 }
 
 function discardAllFields() {
@@ -1155,7 +1198,7 @@ async function initMessagesTab() {
     if (!list) return;
 
     list.innerHTML = `<div class="chat-loading">Loading…</div>`;
-    empty.style.display = 'none';
+    if (empty) empty.style.display = 'none'; // ← null check
 
     try {
         const res = await fetch(`${BASE}/get_user_conversations.php?user_id=${userLocal.id}`);
@@ -1165,10 +1208,7 @@ async function initMessagesTab() {
         list.innerHTML = "";
 
         if (!Array.isArray(data) || data.length === 0) {
-            // FIX 6: show the empty state correctly
-            empty.style.display = 'block';
-
-            // FIX: still open pending chat even if the list appears empty
+            if (empty) empty.style.display = 'block'; // ← null check
             checkPendingChat();
             return;
         }
@@ -1178,7 +1218,7 @@ async function initMessagesTab() {
             const firstLetter = name.charAt(0).toUpperCase();
             const div         = document.createElement("div");
             div.className     = "conv-item";
-            div.onclick       = () => openConversation(conv.other_id, name, conv.ride_id);
+            div.onclick       = () => openConversation(Number(conv.other_id), name, Number(conv.ride_id));
             div.innerHTML = `
                 <div class="conv-avatar">${firstLetter}</div>
                 <div class="conv-info">
@@ -1190,12 +1230,12 @@ async function initMessagesTab() {
             list.appendChild(div);
         });
 
-        // Open any pending chat (e.g. from "Message Driver" button)
         checkPendingChat();
 
     } catch (e) {
-        console.error(e);
-        list.innerHTML = `<div class="conv-empty" style="display:block">Error loading messages.</div>`;
+        // Show the REAL error
+        console.error("REAL ERROR:", e.message, e.stack);
+        list.innerHTML = `<p style="color:#dc2626;font-size:13px;padding:16px">Error: ${e.message}</p>`;
     }
 }
 
@@ -1216,113 +1256,120 @@ function checkPendingChat() {
 }
 
 /* ── Open a specific conversation ── */
-function openConversation(driverId, driverName, rideId) {
+// Replace your current setInterval with this smarter version
+let lastMessageCount = 0;
 
+function openConversation(driverId, driverName, rideId) {
     if (!driverId || !rideId) return;
 
     currentChat = { driverId, rideId };
+    lastMessageCount = 0; // reset on new conversation
 
     document.getElementById("chat-placeholder").style.display = "none";
     document.getElementById("active-chat").style.display = "flex";
-
     document.getElementById("chat-header-name").textContent = driverName || "User";
     document.getElementById("chat-header-avatar").textContent = (driverName || "U")[0];
     document.getElementById("chat-header-sub").textContent = "Ride #" + rideId;
 
     loadMessages(driverId, rideId);
+   
 
     if (chatInterval) clearInterval(chatInterval);
 
+    // FIX: poll every 4s instead of 2s, and only scroll if new messages arrived
     chatInterval = setInterval(() => {
         loadMessages(driverId, rideId);
-    }, 2000);
-    console.log("OPEN:", {
-    me: userLocal.id,
-    other: driverId,
-    ride: rideId
-});
+        
+    }, 4000); // 4 seconds is enough
 }
 /* ================== SEND MESSAGE ================== */
 window.sendMessage = async function () {
-
-    console.log("SEND CLICKED");
-
     const input = document.getElementById("chat-input");
-    const text = input.value.trim();
-
+    const text  = input.value.trim();
     if (!text) return;
 
-    if (!currentChat?.driverId || !currentChat?.rideId) {
-        alert("Chat not selected ❌");
-        return;
-    }
+    if (!currentChat?.driverId || !currentChat?.rideId) return;
 
     const formData = new FormData();
-    formData.append("sender_id", userLocal.id);
+    formData.append("sender_id",   userLocal.id);
     formData.append("receiver_id", currentChat.driverId);
-    formData.append("ride_id", currentChat.rideId);
-    formData.append("message", text);
+    formData.append("ride_id",     currentChat.rideId);
+    formData.append("message",     text);
+
+    // Optimistically clear input immediately
+    input.value = "";
 
     try {
-        const res = await fetch(`${BASE}/send_message.php`, {
-            method: "POST",
-            body: formData
-        });
-
+        const res  = await fetch(`${BASE}/send_message.php`, { method: "POST", body: formData });
         const data = await res.json();
-        console.log("SERVER:", data);
 
         if (data.error) {
-            alert(data.error);
+            showToast(data.error, "error");
             return;
         }
 
-        input.value = "";
+        // FIX: reset key so loadMessages always re-renders after sending
+        window._lastMsgKey = null;
+        lastMessageCount   = 0;
 
         loadMessages(currentChat.driverId, currentChat.rideId);
 
     } catch (err) {
+        showToast("Server error. Message not sent.", "error");
         console.error(err);
-        alert("Server error ❌");
     }
 };
-
 /* ================== LOAD MESSAGES ================== */
 async function loadMessages(driverId, rideId) {
+    const url = `${BASE}/get_messages.php?ride_id=${rideId}&user1=${userLocal.id}&user2=${driverId}`;
+
     try {
-        const res = await fetch(`${BASE}/get_messages.php?ride_id=${rideId}&user1=${userLocal.id}&user2=${driverId}`);
+        const res  = await fetch(url);
         const data = await res.json();
 
         const box = document.getElementById("chat-messages");
         if (!box) return;
 
-        box.innerHTML = "";
-
         if (!Array.isArray(data) || data.length === 0) {
             box.innerHTML = "<p style='color:#aaa;text-align:center;padding:20px'>No messages yet</p>";
+            lastMessageCount = 0;
             return;
         }
 
+        // FIX: skip re-render only if count AND last message are the same
+        const lastMsg = data[data.length - 1];
+        const lastKey = `${lastMsg.sender_id}:${lastMsg.message}:${lastMsg.created_at}`;
+
+        if (data.length === lastMessageCount && lastKey === window._lastMsgKey) return;
+
+        lastMessageCount   = data.length;
+        window._lastMsgKey = lastKey;
+
+        // Remember scroll position — only auto-scroll if user is near bottom
+        const isNearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+
+        box.innerHTML = "";
         data.forEach(m => {
-            const div = document.createElement("div");
-            // FIX: added "chat-msg" class (was missing!) + correct mine/theirs
-            div.className = "chat-msg " + (Number(m.sender_id) === Number(userLocal.id) ? "mine" : "theirs");
+            const div       = document.createElement("div");
+            div.className   = "chat-msg " + (Number(m.sender_id) === Number(userLocal.id) ? "mine" : "theirs");
             div.textContent = m.message;
+
+            // Add timestamp
+            const time       = document.createElement("div");
+            time.className   = "chat-msg-time";
+            time.textContent = m.created_at ? new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+            div.appendChild(time);
+
             box.appendChild(div);
-            // FIX: console.log was here outside the loop — moved inside
-            console.log("MSG sender:", m.sender_id, "ME:", userLocal.id);
         });
 
-        box.scrollTop = box.scrollHeight;
+        // Only scroll to bottom if user was already near the bottom
+        if (isNearBottom) box.scrollTop = box.scrollHeight;
 
     } catch (e) {
-        console.error(e);
+        console.error("loadMessages error:", e);
     }
-    // REMOVED: console.log("MSG:", m.sender_id...) — m was undefined here!
 }
-
-    
-
 /* ═══════════════════════════════════════════════════════════════
    14. LOGOUT
 ═══════════════════════════════════════════════════════════════ */

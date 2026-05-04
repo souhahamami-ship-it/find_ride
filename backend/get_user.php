@@ -1,17 +1,16 @@
-
 <?php
 header("Content-Type: application/json");
 include "connect.php";
 
-// check id
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo json_encode(["error" => "Missing ID"]);
     exit;
 }
 
-$id = intval($_GET['id']); // 🔥 حماية
+$id = intval($_GET['id']);
 
-$sql = "SELECT id, first_name, last_name, email, user_type FROM users WHERE id=$id";
+// ✅ Add phone (and any other fields you need)
+$sql = "SELECT id, first_name, last_name, email, phone, user_type FROM users WHERE id = $id";
 $result = $conn->query($sql);
 
 if (!$result || $result->num_rows === 0) {
@@ -20,6 +19,9 @@ if (!$result || $result->num_rows === 0) {
 }
 
 $user = $result->fetch_assoc();
+
+// ✅ Make sure phone is never null
+$user['phone'] = $user['phone'] ?? '—';
 
 echo json_encode($user);
 ?>
