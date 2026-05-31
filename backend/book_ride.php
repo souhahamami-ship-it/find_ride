@@ -6,7 +6,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 $user_id = intval($data['user_id'] ?? 0);
 $ride_id = intval($data['ride_id'] ?? 0);
-// 🚫 Prevent booking own ride
+// Prevent booking own ride
 $sql = "SELECT user_id FROM rides WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $ride_id);

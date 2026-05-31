@@ -19,7 +19,6 @@ $first = $conn->real_escape_string($data['first_name'] ?? '');
 $last  = $conn->real_escape_string($data['last_name'] ?? '');
 $email = $conn->real_escape_string($data['email'] ?? '');
 $pass  = $data['password'] ?? '';
-
 $user_type = $conn->real_escape_string($data['user_type'] ?? '');
 $vehicle   = $conn->real_escape_string($data['vehicle'] ?? '');
 $cin       = $conn->real_escape_string($data['cin'] ?? '');
